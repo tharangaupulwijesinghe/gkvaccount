@@ -51,6 +51,11 @@
         
         .in-amt { color: var(--success); font-weight: bold; }
         .ex-amt { color: var(--danger); font-weight: bold; }
+        .guest-hide { display: none !important; }
+
+        /* චෙක්පත් තීරුව සඳහා පමණක් විශේෂිත කුඩා විලාසය */
+        .chq-col { width: 85px; font-size: 10px !important; text-align: center; padding: 5px !important; }
+        .chq-col input { width: 14px; height: 14px; vertical-align: middle; cursor: pointer; }
 
         .designer-tag { 
             position: absolute; bottom: 20px; width: 100%; text-align: center; 
@@ -62,10 +67,9 @@
         #sync-status { font-size: 11px; color: #f1c40f; padding: 5px 25px; }
 
         @media print { 
-            .sidebar, button, .no-print, .designer-tag, .btn-del { display: none !important; }
+            .sidebar, button, .no-print, .designer-tag, .btn-del, input[type="checkbox"] { display: none !important; }
             .main-content { margin-left: 0; width: 100%; padding: 0; margin-top: 0; }
             .top-header { background: white !important; color: black !important; border-bottom: 2px solid black; }
-            .top-header h1, .top-header h2 { color: black !important; }
         }
     </style>
 </head>
@@ -76,6 +80,7 @@
         <h2 style="color: var(--primary)">පද්ධතියට ඇතුළු වීම</h2>
         <input type="password" id="passInput" placeholder="මුරපදය ඇතුළත් කරන්න" style="margin-bottom: 15px; text-align: center;">
         <button class="btn-save" onclick="checkLogin()">ඇතුළු වන්න</button>
+        <p style="font-size: 11px; color: #666; margin-top: 10px;">Guest අවසරය සඳහා "Guest" ලෙස ඇතුළත් කරන්න.</p>
     </div>
 </div>
 
@@ -86,21 +91,22 @@
 
 <div class="app-container" id="appBody">
     <div class="sidebar no-print">
-        <div id="sync-status">වලාකුළු දත්ත සමග සම්බන්ධ වෙමින්...</div>
+        <div id="sync-status">සම්බන්ධ වෙමින්...</div>
         <a class="nav-link active" onclick="showSec('dash')">📊 ප්‍රධාන පුවරුව</a>
-        <a class="nav-link" onclick="showSec('entry')">📝 දත්ත ඇතුළත් කිරීම</a>
+        <a class="nav-link admin-only" onclick="showSec('entry')">📝 දත්ත ඇතුළත් කිරීම</a>
         <a class="nav-link" onclick="showSec('projects')">🏗️ විශේෂ ව්‍යාපෘති</a>
         <a class="nav-link" onclick="runReport('cash')">📖 මුදල් පොත</a>
         <a class="nav-link" onclick="runReport('fund')">💰 ලැබීම් සාරාංශය</a>
         <a class="nav-link" onclick="runReport('exp_sum')">💸 වියදම් සාරාංශය</a>
         <a class="nav-link" onclick="runReport('proj_rep')">📋 ව්‍යාපෘති වාර්තාව</a>
+        <a class="nav-link" onclick="runReport('recon')">🏦 බැංකු සැසඳුම</a>
         
         <div class="designer-tag">නිර්මාණය: තරංග විජේසිංහ</div>
     </div>
 
     <div class="main-content">
         <div id="sec-dash" class="section">
-            <h3>වත්මන් මූල්‍ය තත්ත්වය</h3>
+            <h3>වත්මන් මූල්‍ය තත්ත්වය <span id="user-role-lbl" style="font-size:12px; color:var(--accent)"></span></h3>
             <div id="dash-stats" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; margin-bottom:20px;"></div>
             <div class="card">
                 <h4>අරමුදල් හා ව්‍යාපෘති ශේෂයන්</h4>
@@ -114,14 +120,14 @@
                     <h3 class="in-amt">ලැබීම් (Receipts)</h3>
                     <div class="row"><div class="field"><label>දිනය</label><input type="date" id="inDate"></div><div class="field"><label>ලදුපත් අංකය</label><input type="text" id="inRef"></div></div>
                     <div class="row"><div class="field"><label>කේතය</label><select id="inCode"></select></div><div class="field"><label>මුදල</label><input type="number" id="inAmt"></div></div>
-                    <label>විස්තරය (ආරම්භක ශේෂය නම් 'Opening Balance' ලෙස යොදන්න)</label><textarea id="inDesc" rows="2" style="margin-bottom:15px;"></textarea>
+                    <label>විස්තරය</label><textarea id="inDesc" rows="2" style="margin-bottom:15px;"></textarea>
                     <button class="btn-save" onclick="addTx('IN')">ලැබීම සුරකින්න</button>
                 </div>
                 <div class="card field">
                     <h3 class="ex-amt">ගෙවීම් (Payments)</h3>
                     <div class="row"><div class="field"><label>දිනය</label><input type="date" id="exDate"></div><div class="field"><label>වවුචරය</label><input type="text" id="exRef"></div></div>
                     <div class="row"><div class="field"><label>වියදම් කේතය</label><select id="exCode"></select></div><div class="field"><label>මුදල</label><input type="number" id="exAmt"></div></div>
-                    <div class="row"><div class="field"><label>මූලාශ්‍රය (S Code)</label><select id="exSource"></select></div><div class="field"><label>අදාළ ව්‍යාපෘතිය (ඇත්නම්)</label><select id="exProjLink"></select></div></div>
+                    <div class="row"><div class="field"><label>මූලාශ්‍රය</label><select id="exSource"></select></div><div class="field"><label>ව්‍යාපෘතිය</label><select id="exProjLink"></select></div></div>
                     <div class="row"><div class="field"><label>චෙක්පත් අංකය</label><input type="text" id="exCheque"></div></div>
                     <label>විස්තරය</label><textarea id="exDesc" rows="2" style="margin-bottom:15px;"></textarea>
                     <button class="btn-save" style="background:var(--danger)" onclick="addTx('EX')">ගෙවීම සුරකින්න</button>
@@ -130,27 +136,29 @@
         </div>
 
         <div id="sec-projects" class="section" style="display:none;">
-            <div class="card" style="border-top: 5px solid var(--project);">
-                <h3 style="color:var(--project)">නව ව්‍යාපෘතියක් එක් කිරීම</h3>
+            <div class="card admin-only">
+                <h3>නව ව්‍යාපෘතියක් එක් කිරීම</h3>
                 <div class="row">
-                    <div class="field"><label>ව්‍යාපෘතියේ නම</label><input type="text" id="pName"></div>
-                    <div class="field"><label>ලැබුණු මුදල (Income)</label><input type="number" id="pAmt"></div>
+                    <div class="field"><label>නම</label><input type="text" id="pName"></div>
+                    <div class="field"><label>ලැබුණු මුදල</label><input type="number" id="pAmt"></div>
                     <div class="field"><label>දිනය</label><input type="date" id="pDate"></div>
                     <div class="field" style="align-self:flex-end;"><button class="btn-proj" onclick="addProject()">සුරකින්න</button></div>
                 </div>
             </div>
-            <div class="card">
-                <h3>ක්‍රියාත්මක ව්‍යාපෘති ලැයිස්තුව</h3>
-                <div id="projectListTable"></div>
-            </div>
+            <div class="card"><div id="projectListTable"></div></div>
         </div>
 
         <div id="sec-report" class="section" style="display:none;">
             <div class="card">
                 <h2 id="rep-title" style="text-align:center;">වාර්තාව</h2>
+                <div id="recon-inputs" class="no-print" style="display:none; background:#f9f9f9; padding:15px; margin-bottom:20px; border-radius:8px;">
+                    <label>බැංකු ප්‍රකාශනයේ ශේෂය (Bank Statement Balance):</label>
+                    <input type="number" id="bankStatementAmt" style="width:200px; display:inline-block; margin:10px 0;">
+                    <button class="btn-save" style="width:auto; padding:8px 20px;" onclick="calculateRecon()">සැසදුම සාදන්න</button>
+                </div>
                 <div id="rep-body"></div>
-                <button class="btn-print no-print" onclick="window.print()">මුද්‍රණය (Print PDF)</button>
-                <div class="footer-note">නිර්මාණය සහ පද්ධති කළමනාකරණය: තරංග විජේසිංහ</div>
+                <button class="btn-print no-print" onclick="window.print()">මුද්‍රණය</button>
+                <div class="footer-note">තරංග විජේසිංහ</div>
             </div>
         </div>
     </div>
@@ -159,6 +167,7 @@
 <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuT7SdENJsFlXTf7o_tV2l20d-iu3K9IlRLYex6GYx9zT_RKLw9qtJv-1fKQL2NUVJ/exec";
     const MASTER_PASS = "Tharanga";
+    const GUEST_PASS = "Guest";
 
     const S = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"];
     const EX = ["REx1", "REx2", "REx3", "REx4", "REx5", "REx6", "REx7", "CEx1", "CEx2", "CEx3", "CEx4", "CEx5", "CEx6"];
@@ -166,27 +175,27 @@
     window.onload = () => { if(sessionStorage.getItem('isLogged')) unlockApp(); };
 
     function checkLogin() {
-        if(document.getElementById('passInput').value === MASTER_PASS) {
-            sessionStorage.setItem('isLogged', 'true');
-            unlockApp();
-        } else alert("වැරදි මුරපදයක්!");
+        let p = document.getElementById('passInput').value;
+        if(p === MASTER_PASS) { sessionStorage.setItem('isLogged', 't'); sessionStorage.setItem('role', 'admin'); unlockApp(); }
+        else if(p === GUEST_PASS) { sessionStorage.setItem('isLogged', 't'); sessionStorage.setItem('role', 'guest'); unlockApp(); }
+        else alert("මුරපදය වැරදියි!");
     }
 
     function unlockApp() {
+        let role = sessionStorage.getItem('role');
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('appBody').style.display = 'flex';
-        setupDrops(); 
-        refreshDash();
-        syncFromCloud();
+        document.getElementById('user-role-lbl').innerText = role === 'guest' ? "(Guest - View Only)" : "(Admin)";
+        if(role === 'guest') document.querySelectorAll('.admin-only').forEach(e => e.classList.add('guest-hide'));
+        setupDrops(); refreshDash(); syncFromCloud();
     }
 
     async function syncToCloud() {
-        document.getElementById('sync-status').innerText = "දත්ත සුරැකෙමින්...";
+        if(sessionStorage.getItem('role') === 'guest') return;
+        document.getElementById('sync-status').innerText = "සුරැකෙමින්...";
         const data = { db: localStorage.getItem('sch_db'), projs: localStorage.getItem('sch_projs') };
-        try {
-            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            document.getElementById('sync-status').innerText = "Cloud සමග සම්බන්ධයි ✅";
-        } catch(e) { document.getElementById('sync-status').innerText = "Sync අසාර්ථකයි ⚠️"; }
+        try { await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); document.getElementById('sync-status').innerText = "Cloud සමග සම්බන්ධයි ✅"; }
+        catch(e) { document.getElementById('sync-status').innerText = "Sync අසාර්ථකයි ⚠️"; }
     }
 
     async function syncFromCloud() {
@@ -195,8 +204,7 @@
             const cloudData = await res.json();
             if(cloudData.db) localStorage.setItem('sch_db', cloudData.db);
             if(cloudData.projs) localStorage.setItem('sch_projs', cloudData.projs);
-            setupDrops();
-            refreshDash();
+            setupDrops(); refreshDash();
         } catch(e) { console.log("Cloud sync error."); }
     }
 
@@ -204,90 +212,118 @@
         document.getElementById('inCode').innerHTML = S.map(c => `<option>${c}</option>`).join('');
         document.getElementById('exCode').innerHTML = EX.map(c => `<option>${c}</option>`).join('');
         document.getElementById('exSource').innerHTML = S.map(c => `<option>${c}</option>`).join('');
-        
         const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        document.getElementById('exProjLink').innerHTML = '<option value="">-- ව්‍යාපෘතියක් නොවේ --</option>' + 
-            projs.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
-        
+        document.getElementById('exProjLink').innerHTML = '<option value="">-- නැත --</option>' + projs.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
         renderProjectList();
     }
 
     function showSec(id) {
         document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
         document.getElementById('sec-' + id).style.display = 'block';
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        if(id === 'dash') refreshDash();
-        if(id === 'projects') renderProjectList();
+        document.getElementById('recon-inputs').style.display = 'none';
+    }
+
+    function toggleRealized(id, status) {
+        if(sessionStorage.getItem('role') === 'guest') return;
+        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+        let idx = db.findIndex(r => r.id === id);
+        if(idx !== -1) {
+            db[idx].realized = status;
+            localStorage.setItem('sch_db', JSON.stringify(db));
+            syncToCloud();
+        }
     }
 
     function addTx(type) {
+        if(sessionStorage.getItem('role') === 'guest') return;
         const p = type === 'IN' ? 'in' : 'ex';
-        const amtValue = parseFloat(document.getElementById(p+'Amt').value || 0);
-        const dateValue = document.getElementById(p+'Date').value;
-        
-        if(!dateValue || amtValue <= 0) return alert("කරුණාකර සියලු විස්තර සම්පූර්ණ කරන්න.");
-
+        const amt = parseFloat(document.getElementById(p+'Amt').value || 0);
+        const date = document.getElementById(p+'Date').value;
+        if(!date || amt <= 0) return alert("විස්තර සම්පූර්ණ කරන්න.");
         const d = {
-            id: 'tx_' + Date.now() + Math.random().toString(36).substr(2, 9),
-            type, date: dateValue, ref: document.getElementById(p+'Ref').value,
-            code: document.getElementById(p+'Code').value, amt: amtValue,
-            desc: document.getElementById(p+'Desc').value, 
+            id: 'tx_' + Date.now(), type, date, ref: document.getElementById(p+'Ref').value,
+            code: document.getElementById(p+'Code').value, amt, desc: document.getElementById(p+'Desc').value,
             source: type==='EX'?document.getElementById('exSource').value:document.getElementById(p+'Code').value,
             cheque: type==='EX'?document.getElementById('exCheque').value:'-',
-            proj: type==='EX' ? document.getElementById('exProjLink').value : ''
+            proj: type==='EX' ? document.getElementById('exProjLink').value : '',
+            realized: true 
         };
-        
         let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
         db.push(d);
         localStorage.setItem('sch_db', JSON.stringify(db));
-        syncToCloud();
-        alert("දත්ත සාර්ථකව සුරැකුණි!");
-        location.reload();
+        syncToCloud(); location.reload();
     }
 
-    function deleteTx(uniqueId) {
-        if(!confirm("මෙම ගනුදෙනුව පද්ධතියෙන් ඉවත් කිරීමට ඔබට විශ්වාසද?")) return;
-        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        db = db.filter(item => item.id !== uniqueId);
-        localStorage.setItem('sch_db', JSON.stringify(db));
-        syncToCloud();
-        runReport('cash');
-    }
-
-    function addProject() {
-        const name = document.getElementById('pName').value;
-        const amt = parseFloat(document.getElementById('pAmt').value || 0);
-        const date = document.getElementById('pDate').value;
-        if(!name || amt <= 0) return alert("විස්තර සම්පූර්ණ කරන්න.");
-        
-        let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        projs.push({
-            id: 'pj_' + Date.now() + Math.random().toString(36).substr(2, 9),
-            name, initialAmt: amt, date
-        });
-        localStorage.setItem('sch_projs', JSON.stringify(projs));
-        syncToCloud();
-        location.reload();
-    }
-
-    function deleteProj(uniqueId) {
-        if(!confirm("මෙම ව්‍යාපෘතිය ඉවත් කිරීමට ඔබට විශ්වාසද? මෙයින් ව්‍යාපෘතියට අදාළ වියදම් ඉවත් නොවේ.")) return;
-        let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        projs = projs.filter(p => p.id !== uniqueId);
-        localStorage.setItem('sch_projs', JSON.stringify(projs));
-        syncToCloud();
-        renderProjectList();
-    }
-
-    function renderProjectList() {
-        const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
+    function calculateRecon() {
+        const bankStmt = parseFloat(document.getElementById('bankStatementAmt').value || 0);
         const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        let html = '<table><tr><th>ව්‍යාපෘතිය</th><th>ලැබුණු මුදල</th><th>වියදම්</th><th>ශේෂය</th><th class="no-print">ක්‍රියාව</th></tr>';
-        projs.forEach(p => {
-            let pExp = db.filter(r => r.proj === p.name).reduce((a,b)=>a+b.amt,0);
-            html += `<tr><td>${p.name}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${pExp.toFixed(2)}</td><td><b>${(p.initialAmt - pExp).toFixed(2)}</b></td><td class="no-print"><button class="btn-del" onclick="deleteProj('${p.id}')">මකන්න</button></td></tr>`;
-        });
-        document.getElementById('projectListTable').innerHTML = html + '</table>';
+        const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
+        const cashBookBal = (db.filter(r=>r.type==='IN').reduce((a,b)=>a+b.amt,0) + projs.reduce((a,b)=>a+b.initialAmt,0)) - db.filter(r=>r.type==='EX').reduce((a,b)=>a+b.amt,0);
+        
+        const unpresented = db.filter(r => r.type === 'EX' && r.cheque !== '-' && !r.realized);
+        const totalUnpresented = unpresented.reduce((a,b) => a+b.amt, 0);
+
+        let html = `<table style="max-width:600px; margin:auto; border:2px solid var(--primary);">
+            <tr><th colspan="2" style="text-align:center;">බැංකු සැසඳුම් ප්‍රකාශය</th></tr>
+            <tr><td>මුදල් පොතේ ශේෂය</td><td style="text-align:right;"><b>${cashBookBal.toFixed(2)}</b></td></tr>
+            <tr><td>(+) බැංකුවට ඉදිරිපත් නොකළ චෙක්පත්</td><td style="text-align:right; color:var(--success)">${totalUnpresented.toFixed(2)}</td></tr>
+            <tr><td style="padding-left:20px; font-size:11px;"><i>${unpresented.map(u => u.cheque).join(', ') || 'නැත'}</i></td><td></td></tr>
+            <tr><td><b>සැසඳුනු බැංකු ශේෂය</b></td><td style="text-align:right; border-top:1px solid #000; border-bottom:4px double #000;"><b>${(cashBookBal + totalUnpresented).toFixed(2)}</b></td></tr>
+            <tr style="background:#f0f0f0;"><td>බැංකු ප්‍රකාශනයේ ශේෂය</td><td style="text-align:right;"><b>${bankStmt.toFixed(2)}</b></td></tr>
+            <tr><td>වෙනස (අතේ ඇති මුදල)</td><td style="text-align:right; color:var(--danger)"><b>${(cashBookBal - (bankStmt - totalUnpresented)).toFixed(2)}</b></td></tr>
+        </table>`;
+        document.getElementById('rep-body').innerHTML = html;
+    }
+
+    function runReport(type) {
+        showSec('report');
+        const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+        const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
+        const role = sessionStorage.getItem('role');
+        let html = '', title = '';
+
+        if(type === 'recon') {
+            title = "බැංකු සැසඳුම"; document.getElementById('recon-inputs').style.display = 'block';
+            document.getElementById('rep-body').innerHTML = "බැංකු ශේෂය ඇතුළත් කර බොත්තම ඔබන්න.";
+        } else if(type === 'cash') {
+            title = "මුදල් පොත";
+            html = `<table><tr><th>දිනය</th><th>විස්තරය</th><th>කේතය</th><th>ලැබීම් (+)</th><th>ගෙවීම් (-)</th><th>ශේෂය</th><th class="chq-col">මාරු වීම</th></tr>`;
+            let bal = 0;
+            let combined = [...db.map(r=>({...r, isP:false})), ...projs.map(p=>({id:p.id, type:'IN', date:p.date, desc:'Proj: '+p.name, code:'PROJ', amt:p.initialAmt, realized:true, isP:true}))];
+            combined.sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(r => {
+                bal += (r.type==='IN'?r.amt:-r.amt);
+                let check = (r.type==='EX' && r.cheque !== '-') ? `<input type="checkbox" ${r.realized?'checked':''} ${role==='guest'?'disabled':''} onchange="toggleRealized('${r.id}', this.checked)"><br>${r.realized?'ඔව්':'නැත'}` : '-';
+                html += `<tr><td>${r.date}</td><td>${r.desc}</td><td>${r.code}</td><td class="in-amt">${r.type==='IN'?r.amt.toFixed(2):'-'}</td><td class="ex-amt">${r.type==='EX'?r.amt.toFixed(2):'-'}</td><td><b>${bal.toFixed(2)}</b></td><td class="chq-col">${check}</td></tr>`;
+            });
+            document.getElementById('rep-body').innerHTML = html + "</table>";
+        } else if(type === 'fund') {
+            title = "ලැබීම් සාරාංශය";
+            html = `<table><tr><th>කේතය</th><th>ලැබීම්</th><th>ගෙවීම්</th><th>ශේෂය</th></tr>`;
+            S.forEach(s => {
+                let tin = db.filter(r=>r.code===s && r.type==='IN').reduce((a,b)=>a+b.amt,0);
+                let tout = db.filter(r=>r.source===s && r.type==='EX').reduce((a,b)=>a+b.amt,0);
+                html += `<tr><td>${s}</td><td>${tin.toFixed(2)}</td><td>${tout.toFixed(2)}</td><td><b>${(tin-tout).toFixed(2)}</b></td></tr>`;
+            });
+            document.getElementById('rep-body').innerHTML = html + "</table>";
+        } else if(type === 'exp_sum') {
+            title = "වියදම් සාරාංශය";
+            html = `<table><tr><th>කේතය</th><th>මුදල</th></tr>`;
+            let tot = 0;
+            EX.forEach(c => {
+                let a = db.filter(r=>r.type==='EX' && r.code===c).reduce((a,b)=>a+b.amt,0);
+                html += `<tr><td>${c}</td><td class="ex-amt">${a.toFixed(2)}</td></tr>`; tot += a;
+            });
+            document.getElementById('rep-body').innerHTML = html + `<tr style="background:#eee;"><td><b>එකතුව</b></td><td class="ex-amt"><b>${tot.toFixed(2)}</b></td></tr></table>`;
+        } else if(type === 'proj_rep') {
+            title = "ව්‍යාපෘති වාර්තාව";
+            html = `<table><tr><th>ව්‍යාපෘතිය</th><th>ලැබීම්</th><th>වියදම්</th><th>ශේෂය</th></tr>`;
+            projs.forEach(p => {
+                let cost = db.filter(r=>r.proj===p.name).reduce((a,b)=>a+b.amt,0);
+                html += `<tr><td>${p.name}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${cost.toFixed(2)}</td><td><b>${(p.initialAmt-cost).toFixed(2)}</b></td></tr>`;
+            });
+            document.getElementById('rep-body').innerHTML = html + "</table>";
+        }
+        document.getElementById('rep-title').innerText = title;
     }
 
     function refreshDash() {
@@ -295,9 +331,7 @@
         const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         let tIn = db.filter(r=>r.type==='IN').reduce((a,b)=>a+b.amt,0) + projs.reduce((a,b)=>a+b.initialAmt,0);
         let tEx = db.filter(r=>r.type==='EX').reduce((a,b)=>a+b.amt,0);
-        
         document.getElementById('dash-stats').innerHTML = `<div class="card" style="border-bottom:5px solid var(--success)"><h4>මුළු ලැබීම්</h4><p class="in-amt">රු. ${tIn.toFixed(2)}</p></div><div class="card" style="border-bottom:5px solid var(--danger)"><h4>මුළු ගෙවීම්</h4><p class="ex-amt">රු. ${tEx.toFixed(2)}</p></div><div class="card" style="border-bottom:5px solid var(--accent)"><h4>වර්තමාන ශේෂය</h4><p><b>රු. ${(tIn-tEx).toFixed(2)}</b></p></div>`;
-        
         let fundHtml = '';
         S.forEach(s => {
             let bal = db.filter(r=>r.code===s && r.type==='IN').reduce((a,b)=>a+b.amt,0) - db.filter(r=>r.source===s && r.type==='EX').reduce((a,b)=>a+b.amt,0);
@@ -306,54 +340,28 @@
         document.getElementById('dash-fund-grid').innerHTML = fundHtml;
     }
 
-    function runReport(type) {
-        showSec('report');
-        const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        let html = '', title = '', runningBal = 0;
+    function addProject() {
+        if(sessionStorage.getItem('role') === 'guest') return;
+        const name = document.getElementById('pName').value;
+        const amt = parseFloat(document.getElementById('pAmt').value || 0);
+        const date = document.getElementById('pDate').value;
+        if(!name || amt <= 0) return alert("විස්තර සම්පූර්ණ කරන්න.");
+        let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
+        projs.push({ id: 'pj_'+Date.now(), name, initialAmt: amt, date });
+        localStorage.setItem('sch_projs', JSON.stringify(projs));
+        syncToCloud(); location.reload();
+    }
 
-        if(type === 'cash') {
-            title = "මුදල් පොත (Cash Book)";
-            html = `<table><tr><th>දිනය</th><th>විස්තරය</th><th>කේතය</th><th>ලදුපත්/වවුචර්</th><th>ලැබීම් (+)</th><th>ගෙවීම් (-)</th><th>ශේෂය</th><th class="no-print">ක්‍රියාව</th></tr>`;
-            let combined = [
-                ...db.map(r=>({...r, isProjectSource: false})), 
-                ...projs.map(p=>({id: p.id, type:'IN', date:p.date, desc:'Project: '+p.name, code:'PROJ', amt:p.initialAmt, ref:'-', isProjectSource: true}))
-            ];
-            combined.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(r => {
-                runningBal += (r.type === 'IN' ? r.amt : -r.amt);
-                let delBtn = r.isProjectSource ? `<button class="btn-del" style="background:#8e44ad" onclick="showSec('projects')">ව්‍යාපෘති වලට යන්න</button>` : `<button class="btn-del" onclick="deleteTx('${r.id}')">මකන්න</button>`;
-                html += `<tr><td>${r.date}</td><td>${r.desc}</td><td>${r.code}</td><td>${r.ref || '-'}</td><td class="in-amt">${r.type==='IN'?r.amt.toFixed(2):'-'}</td><td class="ex-amt">${r.type==='EX'?r.amt.toFixed(2):'-'}</td><td><b>${runningBal.toFixed(2)}</b></td><td class="no-print">${delBtn}</td></tr>`;
-            });
-        } else if(type === 'proj_rep') {
-            title = "විශේෂ ව්‍යාපෘති වාර්තාව";
-            html = `<table><tr><th>ව්‍යාපෘතිය</th><th>ආරම්භක දිනය</th><th>මුළු ලැබීම</th><th>මුළු වියදම</th><th>ශේෂය</th></tr>`;
-            projs.forEach(p => {
-                let cost = db.filter(r => r.proj === p.name).reduce((a,b)=>a+b.amt,0);
-                html += `<tr><td>${p.name}</td><td>${p.date}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${cost.toFixed(2)}</td><td><b>${(p.initialAmt-cost).toFixed(2)}</b></td></tr>`;
-            });
-        } else if(type === 'fund') {
-            title = "ලැබීම් (අරමුදල්) සාරාංශය";
-            html = `<table><tr><th>අරමුදල් කේතය</th><th>මුළු ලැබීම්</th><th>මුළු ගෙවීම්</th><th>ශේෂය</th></tr>`;
-            S.forEach(s => {
-                let tin = db.filter(r=>r.code===s && r.type==='IN').reduce((a,b)=>a+b.amt,0);
-                let tout = db.filter(r=>r.source===s && r.type==='EX').reduce((a,b)=>a+b.amt,0);
-                html += `<tr><td>${s}</td><td>${tin.toFixed(2)}</td><td>${tout.toFixed(2)}</td><td><b>${(tin-tout).toFixed(2)}</b></td></tr>`;
-            });
-        } else if(type === 'exp_sum') {
-            title = "වියදම් (පාලන) සාරාංශ වාර්තාව";
-            html = `<table><tr><th>වියදම් කේතය</th><th>මුළු එකතුව (රු.)</th></tr>`;
-            let total = 0;
-            EX.forEach(c => {
-                let amt = db.filter(r => r.type === 'EX' && r.code === c).reduce((a,b)=>a+b.amt,0);
-                html += `<tr><td>${c}</td><td class="ex-amt">${amt.toFixed(2)}</td></tr>`;
-                total += amt;
-            });
-            html += `<tr style="background:#eee;"><td><b>මුළු එකතුව</b></td><td class="ex-amt"><b>${total.toFixed(2)}</b></td></tr>`;
-        }
-        document.getElementById('rep-title').innerText = title;
-        document.getElementById('rep-body').innerHTML = html + `</table>`;
+    function renderProjectList() {
+        const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
+        const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+        let html = '<table><tr><th>ව්‍යාපෘතිය</th><th>ලැබුණු මුදල</th><th>වියදම්</th><th>ශේෂය</th></tr>';
+        projs.forEach(p => {
+            let e = db.filter(r=>r.proj===p.name).reduce((a,b)=>a+b.amt,0);
+            html += `<tr><td>${p.name}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${e.toFixed(2)}</td><td><b>${(p.initialAmt-e).toFixed(2)}</b></td></tr>`;
+        });
+        document.getElementById('projectListTable').innerHTML = html + '</table>';
     }
 </script>
 </body>
-
 </html>
