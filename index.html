@@ -43,7 +43,9 @@
         .btn-save { background: var(--success); color: white; width: 100%; }
         .btn-proj { background: var(--project); color: white; width: 100%; }
         .btn-print { background: var(--accent); color: white; margin-top: 20px; padding: 10px 30px; }
+        .btn-pdf { background: #555; color: white; margin-top: 20px; padding: 10px 30px; margin-left: 10px; }
         .btn-del { background: #e74c3c; color: white; padding: 5px 10px; font-size: 11px; border-radius: 4px; border: none; }
+        .btn-edit { background: var(--gold); color: black; padding: 5px 10px; font-size: 11px; border-radius: 4px; border: none; margin-right: 5px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
         th { background: #f8f9fa; color: var(--primary); padding: 12px; border: 1px solid #dee2e6; text-align: left; font-size: 13px; }
@@ -56,6 +58,12 @@
         .chq-col { width: 85px; font-size: 10px !important; text-align: center; padding: 5px !important; }
         .chq-col input { width: 14px; height: 14px; vertical-align: middle; cursor: pointer; }
 
+        .opening-bal-compact { border-left: 5px solid var(--gold); padding: 15px !important; margin-top: 10px; }
+        .opening-bal-compact h4 { margin: 0 0 10px 0; font-size: 14px; }
+        .compact-row { display: flex; gap: 10px; align-items: flex-end; }
+        .compact-row .field { flex: 1; }
+        .compact-row input, .compact-row select { padding: 6px; font-size: 12px; }
+
         .designer-tag { 
             position: relative; margin-top: 20px; width: 100%; text-align: center; 
             padding: 10px 0; background: rgba(0,0,0,0.2); color: var(--gold); 
@@ -67,8 +75,17 @@
 
         .filter-box { background: #eef2f3; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #d1d8e0; }
 
+        /* Guide Styles */
+        .guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .guide-card { border-radius: 8px; border: 1px solid #ddd; overflow: hidden; }
+        .guide-head { padding: 10px; color: white; font-weight: bold; text-align: center; }
+        .guide-table { width: 100%; font-size: 12px; border: none; margin-top: 0; }
+        .guide-table tr:nth-child(even) { background: #f9f9f9; }
+        .guide-table td { border: none; border-bottom: 1px solid #eee; }
+        .c-badge { background: #eee; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #333; }
+
         @media print { 
-            .sidebar, button, .no-print, .designer-tag, .btn-del, input[type="checkbox"], .filter-box { display: none !important; }
+            .sidebar, button, .no-print, .designer-tag, .btn-del, .btn-edit, input[type="checkbox"], .filter-box { display: none !important; }
             .main-content { margin-left: 0; width: 100%; padding: 0; margin-top: 0; }
             .top-header { background: white !important; color: black !important; border-bottom: 2px solid black; }
         }
@@ -100,8 +117,8 @@
         <a class="nav-link" onclick="prepareReport('fund')">💰 ලැබීම් සාරාංශය</a>
         <a class="nav-link" onclick="prepareReport('exp_sum')">💸 වියදම් සාරාංශය</a>
         <a class="nav-link" onclick="prepareReport('code_wise')">🔍 කේත අනුව වාර්තා</a>
-        <a class="nav-link" onclick="runReport('proj_rep')">📋 ව්‍යාපෘති වාර්තාව</a>
-        <a class="nav-link" onclick="runReport('recon')">🏦 බැංකු සැසඳුම</a>
+        <a class="nav-link" onclick="prepareReport('proj_rep')">📋 ව්‍යාපෘති වාර්තාව</a>
+        <a class="nav-link" onclick="prepareReport('recon')">🏦 බැංකු සැසඳුම</a>
         <a class="nav-link" onclick="showSec('guide')">📘 කේත විස්තරය</a>
         
         <div class="designer-tag">නිර්මාණය: තරංග විජේසිංහ</div>
@@ -118,16 +135,6 @@
         </div>
 
         <div id="sec-entry" class="section" style="display:none;">
-            <div class="card admin-only" style="border-left: 5px solid var(--gold); margin-bottom: 25px;">
-                <h3>වර්ෂය ආරම්භක ශේෂයන් ඇතුළත් කිරීම</h3>
-                <div class="row">
-                    <div class="field"><label>අරමුදල් කේතය</label><select id="openCode"></select></div>
-                    <div class="field"><label>දිනය</label><input type="date" id="openDate"></div>
-                    <div class="field"><label>ශේෂය</label><input type="number" id="openAmt"></div>
-                    <div class="field" style="align-self:flex-end;"><button class="btn-save" style="background:var(--gold); color:black;" onclick="addOpeningBal()">එක් කරන්න</button></div>
-                </div>
-            </div>
-
             <div class="row">
                 <div class="card field">
                     <h3 class="in-amt">ලැබීම් (Receipts)</h3>
@@ -145,6 +152,21 @@
                     <label>විස්තරය</label><textarea id="exDesc" rows="2" style="margin-bottom:15px;"></textarea>
                     <button class="btn-save" style="background:var(--danger)" onclick="addTx('EX')">ගෙවීම සුරකින්න</button>
                 </div>
+            </div>
+
+            <div class="card admin-only opening-bal-compact">
+                <h4>වර්ෂය ආරම්භක ශේෂයන්</h4>
+                <div class="compact-row">
+                    <div class="field"><label>කේතය</label><select id="openCode"></select></div>
+                    <div class="field"><label>දිනය</label><input type="date" id="openDate"></div>
+                    <div class="field"><label>ශේෂය</label><input type="number" id="openAmt"></div>
+                    <div class="field"><button class="btn-save" style="background:var(--gold); color:black; padding: 7px;" onclick="addOpeningBal()">එක් කරන්න</button></div>
+                </div>
+            </div>
+
+            <div class="card admin-only" style="margin-top: 20px;">
+                <h3 style="color: var(--accent);">අවසාන දත්ත ඇතුළත් කිරීම් 5</h3>
+                <div id="recent-transactions-list"></div>
             </div>
         </div>
 
@@ -183,57 +205,57 @@
                     <input type="number" id="bankStatementAmt" style="width:200px; display:inline-block; margin:10px 0;">
                     <button class="btn-save" style="width:auto; padding:8px 20px;" onclick="calculateRecon()">සැසදුම සාදන්න</button>
                 </div>
+
                 <div id="rep-body"></div>
-                <button class="btn-print no-print" onclick="window.print()">මුද්‍රණය</button>
+                <button class="btn-print no-print" onclick="window.print()">මුද්‍රණය කරන්න (Print)</button>
+                <button class="btn-pdf no-print" onclick="window.print()">PDF ලෙස සුරකින්න</button>
                 <div class="footer-note">නිර්මාණය හා පද්ධති කළමනාකරණය:තරංග විජේසිංහ-0777944308</div>
             </div>
         </div>
 
         <div id="sec-guide" class="section" style="display:none;">
             <div class="card">
-                <h3>මූල්‍ය පද්ධති කේත විස්තරය</h3>
-                <div class="row">
-                    <div class="field">
-                        <h4 class="in-amt">ලැබීම් කේත (Income Codes)</h4>
-                        <table style="font-size: 12px;">
-                            <tr><th>කේතය</th><th>විස්තරය</th></tr>
-                            <tr><td>S1</td><td>ඒකාබද්ධ අරමුදල් සහ පළාත් සභා අරමුදල්</td></tr>
-                            <tr><td>S2</td><td>සහයෝගිතා ගිවිසුම් යටතේ ක්‍රියාත්මක වන වැඩසටහන් හා වෘත්තීය කටයුතු සඳහා ලැබෙන අරමුදල්</td></tr>
-                            <tr><td>S3</td><td>රජයේ ආධාර</td></tr>
-                            <tr><td>S4</td><td>පාසල් පාදක ඉගෙනුම් ප්‍රවර්ධන ප්‍රදානයන්, ගුණාත්මක යෙදවුම් හා උසස් මට්ටමේ ඉගෙනුම් ක්‍රියාවලි සඳහා ලැබෙන අරමුදල්</td></tr>
-                            <tr><td>S5</td><td>රජය විසින් අනුමත හා ලියාපදිංචි රාජ්‍ය නොවන සංවිධාන වලින් ලැබෙන ආධාර</td></tr>
-                            <tr><td>S6</td><td>පාසලේ දියුණුව වෙනුවෙන් ස්වකැමැත්තෙන් දායකත්වය ලබා දෙන ඕනෑම පාර්ශවයක පරිත්‍යාග</td></tr>
-                            <tr><td>S7</td><td>පාසලට අයත් වත්කම් වලින් උපයා ගන්නා ආදායම්</td></tr>
-                            <tr><td>S8</td><td>පාසල් සංවර්ධන සමිති සාමාජික මුදල්</td></tr>
-                            <tr><td>S9</td><td>පාසලේ ඉගෙනුම්-ඉගැන්වීම් ක්‍රියාවලියට අදාළ අත්‍යවශ්‍ය ක්‍රියාකාරකම් සඳහා ලැබීම්</td></tr>
-                            <tr><td>S10</td><td>පාසල් සංවර්ධන සමිතිය මගින් තීරණය කරනු ලබන පාසලේ අත්‍යවශ්‍ය වියදම් පියවා ගැනීම සඳහා වූ අරමුදල්</td></tr>
+                <h3 style="color: var(--primary); text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px;">📘 පාසල් මූල්‍ය පද්ධති කේත විස්තර මාර්ගෝපදේශය</h3>
+                <div class="guide-grid">
+                    <div class="guide-card">
+                        <div class="guide-head" style="background: var(--success);">ලැබීම් කේත (Income Codes)</div>
+                        <table class="guide-table">
+                            <tr><td><span class="c-badge">S1</span></td><td>ඒකාබද්ධ අරමුදල් සහ පළාත් සභා අරමුදල්</td></tr>
+                            <tr><td><span class="c-badge">S2</span></td><td>සහයෝගිතා ගිවිසුම් වැඩසටහන් හා වෘත්තීය කටයුතු</td></tr>
+                            <tr><td><span class="c-badge">S3</span></td><td>රජයේ ආධාර</td></tr>
+                            <tr><td><span class="c-badge">S4</span></td><td>ඉගෙනුම් ප්‍රවර්ධන, ගුණාත්මක යෙදවුම් ප්‍රදානයන්</td></tr>
+                            <tr><td><span class="c-badge">S5</span></td><td>අනුමත රාජ්‍ය නොවන සංවිධාන (NGO) ආධාර</td></tr>
+                            <tr><td><span class="c-badge">S6</span></td><td>පාර්ශවකරුවන්ගේ ස්වකැමැත්තෙන් සිදුකරන පරිත්‍යාග</td></tr>
+                            <tr><td><span class="c-badge">S7</span></td><td>පාසල් වත්කම් වලින් උපයා ගන්නා ආදායම්</td></tr>
+                            <tr><td><span class="c-badge">S8</span></td><td>පාසල් සංවර්ධන සමිති (SDS) සාමාජික මුදල්</td></tr>
+                            <tr><td><span class="c-badge">S9</span></td><td>අත්‍යවශ්‍ය ඉගෙනුම් ක්‍රියාවලි ලැබීම්</td></tr>
+                            <tr><td><span class="c-badge">S10</span></td><td>සංවර්ධන සමිතිය මගින් තීරණය කළ අත්‍යවශ්‍ය ලැබීම්</td></tr>
+                        </table>
+                    </div>
+                    <div class="guide-card">
+                        <div class="guide-head" style="background: var(--danger);">වියදම් කේත (Expenditure Codes)</div>
+                        <table class="guide-table">
+                            <tr><td><span class="c-badge">REx1</span></td><td>විෂය මාලා ක්‍රියාත්මක කිරීමේ පුනරාවර්තන වියදම්</td></tr>
+                            <tr><td><span class="c-badge">REx2</span></td><td>උපදේශන හා විෂය සමගාමී ක්‍රියාකාරකම්</td></tr>
+                            <tr><td><span class="c-badge">REx3</span></td><td>පරිපාලන, උපයෝගිතා සේවා හා සුභසාධන</td></tr>
+                            <tr><td><span class="c-badge">REx4</span></td><td>කාර්ය මණ්ඩල පාරිශ්‍රමික</td></tr>
+                            <tr><td><span class="c-badge">REx5</span></td><td>භාණ්ඩ හා උපකරණ නඩත්තු/අලුත්වැඩියා</td></tr>
+                            <tr><td><span class="c-badge">REx6</span></td><td>ගොඩනැගිලි සුළු නඩත්තු/අලුත්වැඩියා</td></tr>
+                            <tr><td><span class="c-badge">REx7</span></td><td>පවිත්‍රතා හා පිරිසිදු කිරීම්</td></tr>
+                            <tr><td><span class="c-badge">CEx1</span></td><td>මූලික පහසුකම් - නව සැපයීම්</td></tr>
+                            <tr><td><span class="c-badge">CEx2</span></td><td>විෂය මාලා ප්‍රාග්ධන වියදම්</td></tr>
+                            <tr><td><span class="c-badge">CEx3</span></td><td>පුස්තකාල පොත් මිලට ගැනීම්</td></tr>
+                            <tr><td><span class="c-badge">CEx4</span></td><td>ගොඩනැගිලි ඉදි කිරීම්/වැඩිදියුණු කිරීම්</td></tr>
+                            <tr><td><span class="c-badge">CEx5</span></td><td>ප්‍රාග්ධන උපකරණ මිලට ගැනීම්</td></tr>
+                            <tr><td><span class="c-badge">CEx6</span></td><td>විශේෂ ව්‍යාපෘති ප්‍රාග්ධන ආධාර</td></tr>
                         </table>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="field">
-                        <h4 class="ex-amt">වියදම් කේත (Expenditure Codes)</h4>
-                        <table style="font-size: 12px;">
-                            <tr><th>කේතය</th><th>විස්තරය</th></tr>
-                            <tr><td>REx1</td><td>විෂය මාලා ක්‍රියාත්මක කිරීමට අදාළ පුනරාවර්තන වියදම්</td></tr>
-                            <tr><td>REx2</td><td>උපදේශන, උසස් අධ්‍යාපන හා විෂය සමගාමී ක්‍රියාකාරකම්</td></tr>
-                            <tr><td>REx3</td><td>අධ්‍යාපන පරිපාලන, උපයෝගිතා සේවා හා සුභසාධන කටයුතු</td></tr>
-                            <tr><td>REx4</td><td>කාර්ය මණ්ඩල පාරිශ්‍රමික</td></tr>
-                            <tr><td>REx5</td><td>ප්‍රාග්ධන භාණ්ඩ හා උපකරණ නඩත්තු හා අලුත්වැඩියා</td></tr>
-                            <tr><td>REx6</td><td>පාසල් ගොඩනැගිලි සුළු නඩත්තු හා අලුත්වැඩියා</td></tr>
-                            <tr><td>REx7</td><td>පවිත්‍රතා හා පිරිසිදු කිරීම්</td></tr>
-                            <tr><td>CEx1</td><td>මූලික පහසුකම් - නව සැපයීම්</td></tr>
-                            <tr><td>CEx2</td><td>විෂය මාලා ක්‍රියාත්මක කිරීමට අදාළ ප්‍රාග්ධන වියදම්</td></tr>
-                            <tr><td>CEx3</td><td>පුස්තකාල පොත් මිලට ගැනීම්</td></tr>
-                            <tr><td>CEx4</td><td>ගොඩනැගිලි නව ඉදිකිරීම්, වැඩිදියුණු කිරීම් හා වෙනත් ප්‍රාග්ධන වියදම්</td></tr>
-                            <tr><td>CEx5</td><td>ප්‍රාග්ධන උපකරණ මිලට ගැනීම්</td></tr>
-                            <tr><td>CEx6</td><td>අතිරේක ව්‍යාපෘති සඳහා විශේෂ ප්‍රාග්ධන ආධාර</td></tr>
-                        </table>
-                    </div>
+                <div style="margin-top: 15px; font-size: 11px; color: #7f8c8d; text-align: center;">
+                    සටහන: දත්ත ඇතුළත් කිරීමේදී ලැබීම් සඳහා "S" කේත ද, ගෙවීම් සඳහා "REx/CEx" කේත ද නිවැරදිව තෝරාගන්න.
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -301,14 +323,12 @@
         const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         document.getElementById('exProjLink').innerHTML = '<option value="">-- නැත --</option>' + projs.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
         renderProjectList();
+        renderRecentTransactions();
     }
 
     function showSec(id) {
         document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
         document.getElementById('sec-' + id).style.display = 'block';
-        if(id !== 'report') {
-            document.getElementById('recon-inputs').style.display = 'none';
-        }
     }
 
     function addOpeningBal() {
@@ -317,27 +337,10 @@
         const amt = parseFloat(document.getElementById('openAmt').value || 0);
         const date = document.getElementById('openDate').value;
         if(!date || amt < 0) return alert("නිවැරදි තොරතුරු ඇතුළත් කරන්න.");
-        
-        const d = {
-            id: 'open_' + Date.now(), type: 'IN', date, ref: 'OP-BAL',
-            code, amt, desc: 'ආරම්භක ශේෂය (' + code + ')',
-            source: code, cheque: '-', proj: '', realized: true
-        };
+        const d = { id: 'open_' + Date.now(), type: 'IN', date, ref: 'OP-BAL', code, amt, desc: 'ආරම්භක ශේෂය (' + code + ')', source: code, cheque: '-', proj: '', realized: true };
         let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        db.push(d);
-        localStorage.setItem('sch_db', JSON.stringify(db));
-        syncToCloud(); refreshDash(); alert("ආරම්භක ශේෂය සුරැකුණි.");
-    }
-
-    function toggleRealized(id, status) {
-        if(sessionStorage.getItem('role') === 'guest') return;
-        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        let idx = db.findIndex(r => r.id === id);
-        if(idx !== -1) {
-            db[idx].realized = status;
-            localStorage.setItem('sch_db', JSON.stringify(db));
-            syncToCloud();
-        }
+        db.push(d); localStorage.setItem('sch_db', JSON.stringify(db));
+        syncToCloud(); refreshDash(); renderRecentTransactions(); alert("ආරම්භක ශේෂය සුරැකුණි.");
     }
 
     function addTx(type) {
@@ -355,28 +358,55 @@
             realized: true 
         };
         let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        db.push(d);
+        db.push(d); localStorage.setItem('sch_db', JSON.stringify(db));
+        syncToCloud(); 
+        document.getElementById(p+'Amt').value = ''; document.getElementById(p+'Ref').value = ''; document.getElementById(p+'Desc').value = '';
+        refreshDash(); renderRecentTransactions(); alert("දත්ත සුරැකුණි.");
+    }
+
+    function renderRecentTransactions() {
+        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+        let recent = db.filter(r => !r.id.startsWith('open')).slice(-5).reverse();
+        let html = '<table><tr><th>දිනය</th><th>කේතය</th><th>මුදල</th><th>විස්තරය</th><th>ක්‍රියාව</th></tr>';
+        recent.forEach(r => {
+            html += `<tr><td>${r.date}</td><td>${r.code}</td><td class="${r.type==='IN'?'in-amt':'ex-amt'}">${r.amt.toFixed(2)}</td><td>${r.desc}</td><td><button class="btn-edit" onclick="editTx('${r.id}')">සංශෝධනය</button><button class="btn-del" onclick="deleteTx('${r.id}')">මකන්න</button></td></tr>`;
+        });
+        document.getElementById('recent-transactions-list').innerHTML = html + '</table>';
+    }
+
+    function editTx(id) {
+        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+        let tx = db.find(r => r.id === id);
+        if(!tx) return;
+        if(confirm("මෙම දත්තය සංශෝධනය කිරීමට අවශ්‍යද?")) {
+            const p = tx.type === 'IN' ? 'in' : 'ex';
+            document.getElementById(p+'Date').value = tx.date;
+            document.getElementById(p+'Ref').value = tx.ref;
+            document.getElementById(p+'Code').value = tx.code;
+            document.getElementById(p+'Amt').value = tx.amt;
+            document.getElementById(p+'Desc').value = tx.desc;
+            deleteTx(id, false); window.scrollTo(0,0);
+        }
+    }
+
+    function deleteTx(id, ask = true) {
+        if(ask && !confirm("මකා දැමීමට ඔබ ස්ථිරද?")) return;
+        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+        db = db.filter(r => r.id !== id);
         localStorage.setItem('sch_db', JSON.stringify(db));
-        syncToCloud(); location.reload();
+        syncToCloud(); refreshDash(); renderRecentTransactions();
     }
 
     function prepareReport(type) {
         currentReportType = type;
         showSec('report');
-        
-        // Handle code filter visibility
-        document.getElementById('code-filter-field').style.display = (type === 'code_wise') ? 'block' : 'none';
-        
-        // Hide/Show Date filters for Recon and Proj reports as requested
-        const dateFields = document.querySelectorAll('.date-filter');
-        if(type === 'recon' || type === 'proj_rep') {
-            dateFields.forEach(f => f.style.display = 'none');
+        if (type === 'recon' || type === 'proj_rep') {
             document.getElementById('filter-area').style.display = 'none';
         } else {
-            dateFields.forEach(f => f.style.display = 'block');
             document.getElementById('filter-area').style.display = 'block';
         }
-
+        document.getElementById('code-filter-field').style.display = (type === 'code_wise') ? 'block' : 'none';
+        document.getElementById('recon-inputs').style.display = (type === 'recon') ? 'block' : 'none';
         runFilteredReport();
     }
 
@@ -388,33 +418,22 @@
     }
 
     function runReport(type, from = '', to = '', codeFilter = '') {
-        showSec('report');
         let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
         const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         const role = sessionStorage.getItem('role');
-        
-        // Filter by date (only if type is not recon or proj_rep)
         if(type !== 'recon' && type !== 'proj_rep') {
             if(from) db = db.filter(r => r.date >= from);
             if(to) db = db.filter(r => r.date <= to);
         }
-
         let html = '', title = '';
-
         if(type === 'recon') {
             title = "බැංකු සැසඳුම"; 
-            document.getElementById('filter-area').style.display = 'none';
-            document.getElementById('recon-inputs').style.display = 'block';
-            document.getElementById('rep-body').innerHTML = "බැංකු ශේෂය ඇතුළත් කර බොත්තම ඔබන්න.";
-            document.getElementById('rep-title').innerText = title;
-            return;
-        }
-
-        if(type === 'cash') {
+            document.getElementById('rep-body').innerHTML = "බැංකු ප්‍රකාශනයේ ශේෂය ඇතුළත් කර බොත්තම ඔබන්න.";
+        } else if(type === 'cash') {
             title = "මුදල් පොත";
-            html = `<table><tr><th>දිනය</th><th>විස්තරය</th><th>කේතය</th><th>ලැබීම් (+)</th><th>ගෙවීම් (-)</th><th>ශේෂය</th><th class="chq-col">මාරු වීම</th></tr>`;
+            html = `<table><tr><th>දිනය</th><th>විස්තරය</th><th>කේතය</th><th>ලැබීම් (+)</th><th>ගෙවීම් (-)</th><th>ශේෂය</th><th class="chq-col">නිෂ්කාශණය වීම</th></tr>`;
             let bal = 0;
-            let combined = [...db.map(r=>({...r, isP:false})), ...projs.map(p=>({id:p.id, type:'IN', date:p.date, desc:'Proj: '+p.name, code:'PROJ', amt:p.initialAmt, realized:true, isP:true}))];
+            let combined = [...db.map(r=>({...r, isP:false})), ...projs.map(p=>({id:p.id, type:'IN', date:p.date, desc:'Proj: '+p.name, code:'PROJ', amt:p.initialAmt, realized:true}))];
             combined.sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(r => {
                 bal += (r.type==='IN'?r.amt:-r.amt);
                 let check = (r.type==='EX' && r.cheque !== '-') ? `<input type="checkbox" ${r.realized?'checked':''} ${role==='guest'?'disabled':''} onchange="toggleRealized('${r.id}', this.checked)"><br>${r.realized?'ඔව්':'නැත'}` : '-';
@@ -431,36 +450,26 @@
         } else if(type === 'exp_sum') {
             title = "වියදම් සාරාංශය";
             html = `<table><tr><th>කේතය</th><th>මුදල</th></tr>`;
-            let tot = 0;
             EX.forEach(c => {
                 let a = db.filter(r=>r.type==='EX' && r.code===c).reduce((a,b)=>a+b.amt,0);
-                html += `<tr><td>${c}</td><td class="ex-amt">${a.toFixed(2)}</td></tr>`; tot += a;
+                html += `<tr><td>${c}</td><td class="ex-amt">${a.toFixed(2)}</td></tr>`;
             });
-            html += `<tr style="background:#eee;"><td><b>එකතුව</b></td><td class="ex-amt"><b>${tot.toFixed(2)}</b></td></tr>`;
-        } else if(type === 'code_wise') {
-            title = "කේතය අනුව වාර්තාව: " + codeFilter;
-            html = `<table><tr><th>දිනය</th><th>විස්තරය</th><th>ලැබීම් (+)</th><th>ගෙවීම් (-)</th></tr>`;
-            let cIn = 0, cOut = 0;
-            db.filter(r => r.code === codeFilter || r.source === codeFilter).forEach(r => {
-                let showIn = (r.type === 'IN' && r.code === codeFilter) ? r.amt : 0;
-                let showOut = (r.type === 'EX' && r.code === codeFilter) ? r.amt : 0; 
-                if(r.type === 'EX' && r.source === codeFilter && r.code !== codeFilter) showOut = r.amt;
-
-                html += `<tr><td>${r.date}</td><td>${r.desc}</td><td class="in-amt">${showIn?showIn.toFixed(2):'-'}</td><td class="ex-amt">${showOut?showOut.toFixed(2):'-'}</td></tr>`;
-                cIn += showIn; cOut += showOut;
-            });
-            html += `<tr style="background:#eee;"><td><b>එකතුව</b></td><td></td><td class="in-amt">${cIn.toFixed(2)}</td><td class="ex-amt">${cOut.toFixed(2)}</td></tr>`;
         } else if(type === 'proj_rep') {
             title = "ව්‍යාපෘති වාර්තාව";
-            document.getElementById('filter-area').style.display = 'none';
             html = `<table><tr><th>ව්‍යාපෘතිය</th><th>ලැබීම්</th><th>වියදම්</th><th>ශේෂය</th></tr>`;
             projs.forEach(p => {
                 let cost = db.filter(r=>r.proj===p.name).reduce((a,b)=>a+b.amt,0);
                 html += `<tr><td>${p.name}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${cost.toFixed(2)}</td><td><b>${(p.initialAmt-cost).toFixed(2)}</b></td></tr>`;
             });
+        } else if(type === 'code_wise') {
+            title = "කේතය අනුව වාර්තාව: " + codeFilter;
+            html = `<table><tr><th>දිනය</th><th>විස්තරය</th><th>මුදල</th></tr>`;
+            db.filter(r => r.code === codeFilter || r.source === codeFilter).forEach(r => {
+                html += `<tr><td>${r.date}</td><td>${r.desc}</td><td class="${r.type==='IN'?'in-amt':'ex-amt'}">${r.amt.toFixed(2)}</td></tr>`;
+            });
         }
         document.getElementById('rep-title').innerText = title;
-        document.getElementById('rep-body').innerHTML = html + "</table>";
+        if(type !== 'recon') document.getElementById('rep-body').innerHTML = html + "</table>";
     }
 
     function calculateRecon() {
@@ -468,19 +477,17 @@
         const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
         const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         const cashBookBal = (db.filter(r=>r.type==='IN').reduce((a,b)=>a+b.amt,0) + projs.reduce((a,b)=>a+b.initialAmt,0)) - db.filter(r=>r.type==='EX').reduce((a,b)=>a+b.amt,0);
-        
         const unpresented = db.filter(r => r.type === 'EX' && r.cheque !== '-' && !r.realized);
         const totalUnpresented = unpresented.reduce((a,b) => a+b.amt, 0);
-
-        let html = `<table style="max-width:600px; margin:auto; border:2px solid var(--primary);">
-            <tr><th colspan="2" style="text-align:center;">බැංකු සැසඳුම් ප්‍රකාශය</th></tr>
-            <tr><td>මුදල් පොතේ ශේෂය</td><td style="text-align:right;"><b>${cashBookBal.toFixed(2)}</b></td></tr>
-            <tr><td>(+) බැංකුවට ඉදිරිපත් නොකළ චෙක්පත්</td><td style="text-align:right; color:var(--success)">${totalUnpresented.toFixed(2)}</td></tr>
-            <tr><td style="padding-left:20px; font-size:11px;"><i>${unpresented.map(u => u.cheque).join(', ') || 'නැත'}</i></td><td></td></tr>
-            <tr><td><b>සැසඳුනු බැංකු ශේෂය</b></td><td style="text-align:right; border-top:1px solid #000; border-bottom:4px double #000;"><b>${(cashBookBal + totalUnpresented).toFixed(2)}</b></td></tr>
-            <tr style="background:#f0f0f0;"><td>බැංකු ප්‍රකාශනයේ ශේෂය</td><td style="text-align:right;"><b>${bankStmt.toFixed(2)}</b></td></tr>
-        </table>`;
+        let html = `<table style="max-width:600px; margin:auto; border:2px solid var(--primary);"><tr><th colspan="2" style="text-align:center;">බැංකු සැසඳුම් ප්‍රකාශය</th></tr><tr><td>මුදල් පොතේ ශේෂය</td><td style="text-align:right;"><b>${cashBookBal.toFixed(2)}</b></td></tr><tr><td>(+) බැංකුවට ඉදිරිපත් නොකළ චෙක්පත්</td><td style="text-align:right; color:var(--success)">${totalUnpresented.toFixed(2)}</td></tr><tr><td><b>සැසඳුනු බැංකු ශේෂය</b></td><td style="text-align:right; border-top:1px solid #000; border-bottom:4px double #000;"><b>${(cashBookBal + totalUnpresented).toFixed(2)}</b></td></tr><tr style="background:#f0f0f0;"><td>බැංකු ප්‍රකාශනයේ ශේෂය</td><td style="text-align:right;"><b>${bankStmt.toFixed(2)}</b></td></tr></table>`;
         document.getElementById('rep-body').innerHTML = html;
+    }
+
+    function toggleRealized(id, status) {
+        if(sessionStorage.getItem('role') === 'guest') return;
+        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+        let idx = db.findIndex(r => r.id === id);
+        if(idx !== -1) { db[idx].realized = status; localStorage.setItem('sch_db', JSON.stringify(db)); syncToCloud(); }
     }
 
     function refreshDash() {
@@ -488,7 +495,7 @@
         const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         let tIn = db.filter(r=>r.type==='IN').reduce((a,b)=>a+b.amt,0) + projs.reduce((a,b)=>a+b.initialAmt,0);
         let tEx = db.filter(r=>r.type==='EX').reduce((a,b)=>a+b.amt,0);
-        document.getElementById('dash-stats').innerHTML = `<div class="card" style="border-bottom:5px solid var(--success)"><h4>මුළු ලැබීම්</h4><p class="in-amt">රු. ${tIn.toFixed(2)}</p></div><div class="card" style="border-bottom:5px solid var(--danger)"><h4>මුළු ගෙවීම්</h4><p class="ex-amt">රු. ${tEx.toFixed(2)}</p></div><div class="card" style="border-bottom:5px solid var(--accent)"><h4>වර්තමාන ශේෂය</h4><p><b>රු. ${(tIn-tEx).toFixed(2)}</b></p></div>`;
+        document.getElementById('dash-stats').innerHTML = `<div class="card"><h4>මුළු ලැබීම්</h4><p class="in-amt">රු. ${tIn.toFixed(2)}</p></div><div class="card"><h4>මුළු ගෙවීම්</h4><p class="ex-amt">රු. ${tEx.toFixed(2)}</p></div><div class="card"><h4>ශේෂය</h4><p>රු. ${(tIn-tEx).toFixed(2)}</p></div>`;
         let fundHtml = '';
         S.forEach(s => {
             let bal = db.filter(r=>r.code===s && r.type==='IN').reduce((a,b)=>a+b.amt,0) - db.filter(r=>r.source===s && r.type==='EX').reduce((a,b)=>a+b.amt,0);
