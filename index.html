@@ -173,11 +173,14 @@
         <div id="sec-projects" class="section" style="display:none;">
             <div class="card admin-only">
                 <h3>නව ව්‍යාපෘතියක් එක් කිරීම</h3>
+                <input type="hidden" id="editProjectId">
                 <div class="row">
                     <div class="field"><label>නම</label><input type="text" id="pName"></div>
                     <div class="field"><label>ලැබුණු මුදල</label><input type="number" id="pAmt"></div>
                     <div class="field"><label>දිනය</label><input type="date" id="pDate"></div>
-                    <div class="field" style="align-self:flex-end;"><button class="btn-proj" onclick="addProject()">සුරකින්න</button></div>
+                    <div class="field" style="align-self:flex-end;">
+                        <button class="btn-proj" id="btnProjectAction" onclick="addProject()">සුරකින්න</button>
+                    </div>
                 </div>
             </div>
             <div class="card"><div id="projectListTable"></div></div>
@@ -221,33 +224,33 @@
                         <div class="guide-head" style="background: var(--success);">ලැබීම් කේත (Income Codes)</div>
                         <table class="guide-table">
                             <tr><td><span class="c-badge">S1</span></td><td>ඒකාබද්ධ අරමුදල් සහ පළාත් සභා අරමුදල්</td></tr>
-                            <tr><td><span class="c-badge">S2</span></td><td>සහයෝගිතා ගිවිසුම් වැඩසටහන් හා වෘත්තීය කටයුතු</td></tr>
+                            <tr><td><span class="c-badge">S2</span></td><td>සහයෝගිතා ගිවිසු යටතේ ක්‍රියාත්මක වන වැඩසටහන හා ව්‍යාපෘති සදහා ලැබෙන අරමුදල්</td></tr>
                             <tr><td><span class="c-badge">S3</span></td><td>රජයේ ආධාර</td></tr>
-                            <tr><td><span class="c-badge">S4</span></td><td>ඉගෙනුම් ප්‍රවර්ධන, ගුණාත්මක යෙදවුම් ප්‍රදානයන්</td></tr>
-                            <tr><td><span class="c-badge">S5</span></td><td>අනුමත රාජ්‍ය නොවන සංවිධාන (NGO) ආධාර</td></tr>
-                            <tr><td><span class="c-badge">S6</span></td><td>පාර්ශවකරුවන්ගේ ස්වකැමැත්තෙන් සිදුකරන පරිත්‍යාග</td></tr>
-                            <tr><td><span class="c-badge">S7</span></td><td>පාසල් වත්කම් වලින් උපයා ගන්නා ආදායම්</td></tr>
-                            <tr><td><span class="c-badge">S8</span></td><td>පාසල් සංවර්ධන සමිති (SDS) සාමාජික මුදල්</td></tr>
-                            <tr><td><span class="c-badge">S9</span></td><td>අත්‍යවශ්‍ය ඉගෙනුම් ක්‍රියාවලි ලැබීම්</td></tr>
-                            <tr><td><span class="c-badge">S10</span></td><td>සංවර්ධන සමිතිය මගින් තීරණය කළ අත්‍යවශ්‍ය ලැබීම්</td></tr>
+                            <tr><td><span class="c-badge">S4</span></td><td>පාසල් පාදක ඉගෙනුම් ප්‍රවර්දන ප්‍රදානයන් , ගුණාත්මක යෙදවුම් හා උසස් මට්ටමේ ඉගෙනුම් ක්‍රියාවලි සදහා ලැබෙන අරමුදල්</td></tr>
+                            <tr><td><span class="c-badge">S5</span></td><td>රජය විසින් අනුමත හා ලියාපදිංචි රාජ්‍ය නොවන සංවිධාන වලින් ලැබෙන ආධාර</td></tr>
+                            <tr><td><span class="c-badge">S6</span></td><td>පාසලේ දියුණුව වෙනුවෙන් ස්ව කැමැත්තෙන් දයකත්වය ලබා දෙන ඕනෑම පාර්ශවයක පරිත්‍යග</td></tr>
+                            <tr><td><span class="c-badge">S7</span></td><td>පාසලට අයත් වත්කම් වලින් උපයා ගන්නා ආදායම්</td></tr>
+                            <tr><td><span class="c-badge">S8</span></td><td>පාසල් සංවර්ධන සමිති සාමාජික මුදල්</td></tr>
+                            <tr><td><span class="c-badge">S9</span></td><td>පාසලේ ඉගෙනුම් ඉගැන්වීම් ක්‍රියාවලියට අදාල අත්‍යවශ්‍ය ක්‍රියාකාරකම් සදහා ලැබීම්</td></tr>
+                            <tr><td><span class="c-badge">S10</span></td><td>පාසල් සංවර්ධන සමිතිය මගින් තීරණය කරණු ලබන පාසලේ අත්‍වශ වියදම් පියවා ගැනීම සදහා අරමුදල් </td></tr>
                         </table>
                     </div>
                     <div class="guide-card">
                         <div class="guide-head" style="background: var(--danger);">වියදම් කේත (Expenditure Codes)</div>
                         <table class="guide-table">
-                            <tr><td><span class="c-badge">REx1</span></td><td>විෂය මාලා ක්‍රියාත්මක කිරීමේ පුනරාවර්තන වියදම්</td></tr>
-                            <tr><td><span class="c-badge">REx2</span></td><td>උපදේශන හා විෂය සමගාමී ක්‍රියාකාරකම්</td></tr>
-                            <tr><td><span class="c-badge">REx3</span></td><td>පරිපාලන, උපයෝගිතා සේවා හා සුභසාධන</td></tr>
+                            <tr><td><span class="c-badge">REx1</span></td><td>විෂය මාලා ක්‍රියාත්මක කිරීමට අදාල පුනරාවර්තන වියදම්</td></tr>
+                            <tr><td><span class="c-badge">REx2</span></td><td>උපදේශන , උසස් අධ්‍යාපන හා විෂය සමගාමී ක්‍රියාකාරකම්</td></tr>
+                            <tr><td><span class="c-badge">REx3</span></td><td>අධ්‍යාපන පරිපාලන හා උපයෝගිතා  සේවා හා ශුභසාධන කටයුතු</td></tr>
                             <tr><td><span class="c-badge">REx4</span></td><td>කාර්ය මණ්ඩල පාරිශ්‍රමික</td></tr>
-                            <tr><td><span class="c-badge">REx5</span></td><td>භාණ්ඩ හා උපකරණ නඩත්තු/අලුත්වැඩියා</td></tr>
-                            <tr><td><span class="c-badge">REx6</span></td><td>ගොඩනැගිලි සුළු නඩත්තු/අලුත්වැඩියා</td></tr>
+                            <tr><td><span class="c-badge">REx5</span></td><td>ප්‍රාග්ධන භාණ්ඩ හා උපකරණ නඩත්තු/අලුත්වැඩියා</td></tr>
+                            <tr><td><span class="c-badge">REx6</span></td><td>පාසලේ ගොඩනැගිලි සුළු නඩත්තු/අලුත්වැඩියා</td></tr>
                             <tr><td><span class="c-badge">REx7</span></td><td>පවිත්‍රතා හා පිරිසිදු කිරීම්</td></tr>
                             <tr><td><span class="c-badge">CEx1</span></td><td>මූලික පහසුකම් - නව සැපයීම්</td></tr>
-                            <tr><td><span class="c-badge">CEx2</span></td><td>විෂය මාලා ප්‍රාග්ධන වියදම්</td></tr>
+                            <tr><td><span class="c-badge">CEx2</span></td><td>විෂය මාලා ක්‍රියාත්මක කිරීමට අදාල ප්‍රාග්ධන වියදම්</td></tr>
                             <tr><td><span class="c-badge">CEx3</span></td><td>පුස්තකාල පොත් මිලට ගැනීම්</td></tr>
-                            <tr><td><span class="c-badge">CEx4</span></td><td>ගොඩනැගිලි ඉදි කිරීම්/වැඩිදියුණු කිරීම්</td></tr>
+                            <tr><td><span class="c-badge">CEx4</span></td><td>ගොඩනැගිලි  නව ඉදිකිරීම්, වැඩිදියුණු කිරීම් හා වෙනත් ප්‍රාග්ධන වියදම්</td></tr>
                             <tr><td><span class="c-badge">CEx5</span></td><td>ප්‍රාග්ධන උපකරණ මිලට ගැනීම්</td></tr>
-                            <tr><td><span class="c-badge">CEx6</span></td><td>විශේෂ ව්‍යාපෘති ප්‍රාග්ධන ආධාර</td></tr>
+                            <tr><td><span class="c-badge">CEx6</span></td><td>විශේෂ ව්‍යාපෘති සදහා විශේෂ ප්‍රාග්ධන ආධාර</td></tr>
                         </table>
                     </div>
                 </div>
@@ -509,20 +512,58 @@
         const name = document.getElementById('pName').value;
         const amt = parseFloat(document.getElementById('pAmt').value || 0);
         const date = document.getElementById('pDate').value;
+        const editId = document.getElementById('editProjectId').value;
+        
         if(!name || amt <= 0) return alert("විස්තර සම්පූර්ණ කරන්න.");
+        
         let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        projs.push({ id: 'pj_'+Date.now(), name, initialAmt: amt, date });
+        
+        if(editId) {
+            let idx = projs.findIndex(p => p.id === editId);
+            if(idx !== -1) projs[idx] = { ...projs[idx], name, initialAmt: amt, date };
+            document.getElementById('editProjectId').value = '';
+            document.getElementById('btnProjectAction').innerText = 'සුරකින්න';
+        } else {
+            projs.push({ id: 'pj_'+Date.now(), name, initialAmt: amt, date });
+        }
+        
         localStorage.setItem('sch_projs', JSON.stringify(projs));
-        syncToCloud(); location.reload();
+        syncToCloud(); setupDrops();
+        document.getElementById('pName').value = '';
+        document.getElementById('pAmt').value = '';
+        document.getElementById('pDate').value = '';
+        alert("ව්‍යාපෘති දත්ත යාවත්කාලීන විය.");
+    }
+
+    function deleteProject(id) {
+        if(!confirm("මෙම ව්‍යාපෘතිය මකා දැමීමට ඔබ ස්ථිරද? මින් එම ව්‍යාපෘතියට අදාළ වියදම් ඉවත් නොවන බව සලකන්න.")) return;
+        let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
+        projs = projs.filter(p => p.id !== id);
+        localStorage.setItem('sch_projs', JSON.stringify(projs));
+        syncToCloud(); setupDrops();
+    }
+
+    function editProject(id) {
+        let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
+        let p = projs.find(x => x.id === id);
+        if(!p) return;
+        document.getElementById('pName').value = p.name;
+        document.getElementById('pAmt').value = p.initialAmt;
+        document.getElementById('pDate').value = p.date;
+        document.getElementById('editProjectId').value = p.id;
+        document.getElementById('btnProjectAction').innerText = 'යාවත්කාලීන කරන්න';
+        window.scrollTo(0,0);
     }
 
     function renderProjectList() {
         const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        let html = '<table><tr><th>ව්‍යාපෘතිය</th><th>ලැබුණු මුදල</th><th>වියදම්</th><th>ශේෂය</th></tr>';
+        const role = sessionStorage.getItem('role');
+        let html = '<table><tr><th>ව්‍යාපෘතිය</th><th>ලැබුණු මුදල</th><th>වියදම්</th><th>ශේෂය</th><th class="admin-only">ක්‍රියාව</th></tr>';
         projs.forEach(p => {
             let e = db.filter(r=>r.proj===p.name).reduce((a,b)=>a+b.amt,0);
-            html += `<tr><td>${p.name}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${e.toFixed(2)}</td><td><b>${(p.initialAmt-e).toFixed(2)}</b></td></tr>`;
+            let actions = `<button class="btn-edit" onclick="editProject('${p.id}')">සංශෝධනය</button><button class="btn-del" onclick="deleteProject('${p.id}')">මකන්න</button>`;
+            html += `<tr><td>${p.name}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${e.toFixed(2)}</td><td><b>${(p.initialAmt-e).toFixed(2)}</b></td><td class="admin-only ${role==='guest'?'guest-hide':''}">${actions}</td></tr>`;
         });
         document.getElementById('projectListTable').innerHTML = html + '</table>';
     }
