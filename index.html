@@ -19,19 +19,20 @@
 
         .top-header { 
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white; padding: 20px; text-align: center; 
+            color: white; padding: 30px 20px; text-align: center; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 101;
         }
-        .top-header h1 { margin: 0; font-size: 28px; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
-        .top-header h2 { margin: 5px 0 0; font-size: 20px; font-weight: 300; color: #ecf0f1; }
+        /* පාසලේ නම විශාල කිරීම */
+        .top-header h1 { margin: 0; font-size: 42px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .top-header h2 { margin: 10px 0 0; font-size: 24px; font-weight: 300; color: #ecf0f1; }
 
         .app-container { display: none; width: 100%; }
 
-        .sidebar { width: 280px; height: calc(100vh - 100px); background: var(--primary); color: white; position: fixed; top: 105px; padding-top: 10px; box-shadow: 2px 0 10px rgba(0,0,0,0.3); z-index: 100; overflow-y: auto; }
+        .sidebar { width: 280px; height: calc(100vh - 100px); background: var(--primary); color: white; position: fixed; top: 125px; padding-top: 10px; box-shadow: 2px 0 10px rgba(0,0,0,0.3); z-index: 100; overflow-y: auto; }
         .nav-link { padding: 12px 20px; display: block; color: #bdc3c7; text-decoration: none; cursor: pointer; transition: 0.3s; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-link:hover, .nav-link.active { background: var(--secondary); color: white; border-left: 5px solid var(--accent); }
 
-        .main-content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); margin-top: 20px; }
+        .main-content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); margin-top: 60px; }
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 25px; }
         
         .row { display: flex; gap: 20px; margin-bottom: 15px; }
@@ -46,6 +47,7 @@
         .btn-pdf { background: #555; color: white; margin-top: 20px; padding: 10px 30px; margin-left: 10px; }
         .btn-del { background: #e74c3c; color: white; padding: 5px 10px; font-size: 11px; border-radius: 4px; border: none; }
         .btn-edit { background: var(--gold); color: black; padding: 5px 10px; font-size: 11px; border-radius: 4px; border: none; margin-right: 5px; }
+        .btn-logout { background: #555; color: white; margin: 20px; font-size: 12px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
         th { background: #f8f9fa; color: var(--primary); padding: 12px; border: 1px solid #dee2e6; text-align: left; font-size: 13px; }
@@ -54,6 +56,7 @@
         .in-amt { color: var(--success); font-weight: bold; }
         .ex-amt { color: var(--danger); font-weight: bold; }
         .guest-hide { display: none !important; }
+        .staff-hide { display: none !important; }
 
         .chq-col { width: 85px; font-size: 10px !important; text-align: center; padding: 5px !important; }
         .chq-col input { width: 14px; height: 14px; vertical-align: middle; cursor: pointer; }
@@ -98,7 +101,7 @@
         <h2 style="color: var(--primary)">පද්ධතියට ඇතුළු වීම</h2>
         <input type="password" id="passInput" placeholder="මුරපදය ඇතුළත් කරන්න" style="margin-bottom: 15px; text-align: center;">
         <button class="btn-save" onclick="checkLogin()">ඇතුළු වන්න</button>
-        <p style="font-size: 11px; color: #666; margin-top: 10px;">Guest අවසරය සඳහා "Guest" ලෙස ඇතුළත් කරන්න.</p>
+        <p style="font-size: 11px; color: #666; margin-top: 10px;">පරිශීලක අනුමැතිය මත පිවිසෙන්න.</p>
     </div>
 </div>
 
@@ -111,8 +114,8 @@
     <div class="sidebar no-print">
         <div id="sync-status">සම්බන්ධ වෙමින්...</div>
         <a class="nav-link active" onclick="showSec('dash')">📊 ප්‍රධාන පුවරුව</a>
-        <a class="nav-link admin-only" onclick="showSec('entry')">📝 දත්ත ඇතුළත් කිරීම</a>
-        <a class="nav-link" onclick="showSec('projects')">🏗️ විශේෂ ව්‍යාපෘති</a>
+        <a class="nav-link admin-only staff-only" id="nav-entry" onclick="showSec('entry')">📝 දත්ත ඇතුළත් කිරීම</a>
+        <a class="nav-link admin-only staff-only" id="nav-projects" onclick="showSec('projects')">🏗️ විශේෂ ව්‍යාපෘති</a>
         <a class="nav-link" onclick="prepareReport('cash')">📖 මුදල් පොත</a>
         <a class="nav-link" onclick="prepareReport('fund')">💰 ලැබීම් සාරාංශය</a>
         <a class="nav-link" onclick="prepareReport('exp_sum')">💸 වියදම් සාරාංශය</a>
@@ -121,6 +124,7 @@
         <a class="nav-link" onclick="prepareReport('recon')">🏦 බැංකු සැසඳුම</a>
         <a class="nav-link" onclick="showSec('guide')">📘 කේත විස්තරය</a>
         
+        <button class="btn-logout" onclick="logout()">පද්ධතියෙන් ඉවත් වන්න (Logout)</button>
         <div class="designer-tag">නිර්මාණය: තරංග විජේසිංහ</div>
     </div>
 
@@ -164,18 +168,19 @@
                 </div>
             </div>
 
-            <div class="card admin-only" style="margin-top: 20px;">
+            <div class="card admin-only staff-only" style="margin-top: 20px;">
                 <h3 style="color: var(--accent);">අවසාන දත්ත ඇතුළත් කිරීම් 5</h3>
                 <div id="recent-transactions-list"></div>
             </div>
         </div>
 
         <div id="sec-projects" class="section" style="display:none;">
-            <div class="card admin-only">
+            <div class="card admin-only staff-only">
                 <h3>නව ව්‍යාපෘතියක් එක් කිරීම</h3>
                 <input type="hidden" id="editProjectId">
                 <div class="row">
                     <div class="field"><label>නම</label><input type="text" id="pName"></div>
+                    <div class="field"><label>කේතය (Income Code)</label><select id="pIncomeCode"></select></div>
                     <div class="field"><label>ලැබුණු මුදල</label><input type="number" id="pAmt"></div>
                     <div class="field"><label>දිනය</label><input type="date" id="pDate"></div>
                     <div class="field" style="align-self:flex-end;">
@@ -254,9 +259,6 @@
                         </table>
                     </div>
                 </div>
-                <div style="margin-top: 15px; font-size: 11px; color: #7f8c8d; text-align: center;">
-                    සටහන: දත්ත ඇතුළත් කිරීමේදී ලැබීම් සඳහා "S" කේත ද, ගෙවීම් සඳහා "REx/CEx" කේත ද නිවැරදිව තෝරාගන්න.
-                </div>
             </div>
         </div>
     </div>
@@ -264,8 +266,13 @@
 
 <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuT7SdENJsFlXTf7o_tV2l20d-iu3K9IlRLYex6GYx9zT_RKLw9qtJv-1fKQL2NUVJ/exec";
-    const MASTER_PASS = "Tharanga";
-    const GUEST_PASS = "Guest";
+    
+    // Passwords for 3 user levels
+    const PASSWORDS = {
+        admin: "Tharanga@2025",  // Super User
+        staff: "Priyanthi",  // Data Entry (Can Add, cannot delete/edit)
+        guest: "Guest"      // View Only
+    };
 
     const S = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"];
     const EX = ["REx1", "REx2", "REx3", "REx4", "REx5", "REx6", "REx7", "CEx1", "CEx2", "CEx3", "CEx4", "CEx5", "CEx6"];
@@ -276,17 +283,36 @@
 
     function checkLogin() {
         let p = document.getElementById('passInput').value;
-        if(p === MASTER_PASS) { sessionStorage.setItem('isLogged', 't'); sessionStorage.setItem('role', 'admin'); unlockApp(); }
-        else if(p === GUEST_PASS) { sessionStorage.setItem('isLogged', 't'); sessionStorage.setItem('role', 'guest'); unlockApp(); }
+        if(p === PASSWORDS.admin) { sessionStorage.setItem('isLogged', 't'); sessionStorage.setItem('role', 'admin'); unlockApp(); }
+        else if(p === PASSWORDS.staff) { sessionStorage.setItem('isLogged', 't'); sessionStorage.setItem('role', 'staff'); unlockApp(); }
+        else if(p === PASSWORDS.guest) { sessionStorage.setItem('isLogged', 't'); sessionStorage.setItem('role', 'guest'); unlockApp(); }
         else alert("මුරපදය වැරදියි!");
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        location.reload();
     }
 
     function unlockApp() {
         let role = sessionStorage.getItem('role');
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('appBody').style.display = 'flex';
-        document.getElementById('user-role-lbl').innerText = role === 'guest' ? "(Guest - View Only)" : "(Admin)";
-        if(role === 'guest') document.querySelectorAll('.admin-only').forEach(e => e.classList.add('guest-hide'));
+        
+        let roleName = "බැලීමට පමණි";
+        if(role==='admin') roleName = "ප්‍රධාන කළමනාකරු (Admin)";
+        if(role==='staff') roleName = "දත්ත ඇතුළත් කරන්නා (Staff)";
+        document.getElementById('user-role-lbl').innerText = `(${roleName})`;
+
+        // Visual Permissions
+        if(role === 'guest') {
+            document.getElementById('nav-entry').style.display = 'none';
+            document.getElementById('nav-projects').style.display = 'none';
+        } else {
+            document.getElementById('nav-entry').style.display = 'block';
+            document.getElementById('nav-projects').style.display = 'block';
+        }
+        
         setupDrops(); refreshDash(); syncFromCloud();
     }
 
@@ -314,12 +340,14 @@
         const exS = document.getElementById('exSource');
         const opC = document.getElementById('openCode');
         const filC = document.getElementById('filterCodeSelect');
+        const pIncC = document.getElementById('pIncomeCode');
 
         const sOptions = S.map(c => `<option>${c}</option>`).join('');
         inC.innerHTML = sOptions;
         exC.innerHTML = EX.map(c => `<option>${c}</option>`).join('');
         exS.innerHTML = sOptions;
         opC.innerHTML = sOptions;
+        pIncC.innerHTML = sOptions;
         filC.innerHTML = '<optgroup label="ලැබීම්">' + S.map(c => `<option value="${c}">${c}</option>`).join('') + '</optgroup>' + 
                          '<optgroup label="වියදම්">' + EX.map(c => `<option value="${c}">${c}</option>`).join('') + '</optgroup>';
 
@@ -335,7 +363,7 @@
     }
 
     function addOpeningBal() {
-        if(sessionStorage.getItem('role') === 'guest') return;
+        if(sessionStorage.getItem('role') !== 'admin') return;
         const code = document.getElementById('openCode').value;
         const amt = parseFloat(document.getElementById('openAmt').value || 0);
         const date = document.getElementById('openDate').value;
@@ -347,15 +375,27 @@
     }
 
     function addTx(type) {
-        if(sessionStorage.getItem('role') === 'guest') return;
+        const role = sessionStorage.getItem('role');
+        if(role === 'guest') return;
+        
         const p = type === 'IN' ? 'in' : 'ex';
-        const amt = parseFloat(document.getElementById(p+'Amt').value || 0);
-        const date = document.getElementById(p+'Date').value;
-        if(!date || amt <= 0) return alert("විස්තර සම්පූර්ණ කරන්න.");
+        const amtInput = document.getElementById(p+'Amt');
+        const dateInput = document.getElementById(p+'Date');
+        const codeInput = document.getElementById(p+'Code');
+        
+        const amt = parseFloat(amtInput.value || 0);
+        const date = dateInput.value;
+        const code = codeInput.value;
+
+        if(!date || amt <= 0 || !code) {
+            alert("අසම්පූර්ණ දත්ත: කරුණාකර දිනය, කේතය සහ මුදල නිවැරදිව ඇතුළත් කරන්න.");
+            return;
+        }
+
         const d = {
             id: 'tx_' + Date.now(), type, date, ref: document.getElementById(p+'Ref').value,
-            code: document.getElementById(p+'Code').value, amt, desc: document.getElementById(p+'Desc').value,
-            source: type==='EX'?document.getElementById('exSource').value:document.getElementById(p+'Code').value,
+            code, amt, desc: document.getElementById(p+'Desc').value,
+            source: type==='EX'?document.getElementById('exSource').value:code,
             cheque: type==='EX'?document.getElementById('exCheque').value:'-',
             proj: type==='EX' ? document.getElementById('exProjLink').value : '',
             realized: true 
@@ -363,21 +403,30 @@
         let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
         db.push(d); localStorage.setItem('sch_db', JSON.stringify(db));
         syncToCloud(); 
-        document.getElementById(p+'Amt').value = ''; document.getElementById(p+'Ref').value = ''; document.getElementById(p+'Desc').value = '';
-        refreshDash(); renderRecentTransactions(); alert("දත්ත සුරැකුණි.");
+        amtInput.value = ''; document.getElementById(p+'Ref').value = ''; document.getElementById(p+'Desc').value = '';
+        refreshDash(); renderRecentTransactions(); alert("දත්ත සාර්ථකව සුරැකුණි.");
     }
 
     function renderRecentTransactions() {
         let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
         let recent = db.filter(r => !r.id.startsWith('open')).slice(-5).reverse();
+        const role = sessionStorage.getItem('role');
+        
         let html = '<table><tr><th>දිනය</th><th>කේතය</th><th>මුදල</th><th>විස්තරය</th><th>ක්‍රියාව</th></tr>';
         recent.forEach(r => {
-            html += `<tr><td>${r.date}</td><td>${r.code}</td><td class="${r.type==='IN'?'in-amt':'ex-amt'}">${r.amt.toFixed(2)}</td><td>${r.desc}</td><td><button class="btn-edit" onclick="editTx('${r.id}')">සංශෝධනය</button><button class="btn-del" onclick="deleteTx('${r.id}')">මකන්න</button></td></tr>`;
+            let actionBtns = '';
+            if(role === 'admin') {
+                actionBtns = `<button class="btn-edit" onclick="editTx('${r.id}')">සංශෝධනය</button><button class="btn-del" onclick="deleteTx('${r.id}')">මකන්න</button>`;
+            } else {
+                actionBtns = `<span style="font-size:10px; color:gray">අවසර නැත (Admin Only)</span>`;
+            }
+            html += `<tr><td>${r.date}</td><td>${r.code}</td><td class="${r.type==='IN'?'in-amt':'ex-amt'}">${r.amt.toFixed(2)}</td><td>${r.desc}</td><td>${actionBtns}</td></tr>`;
         });
         document.getElementById('recent-transactions-list').innerHTML = html + '</table>';
     }
 
     function editTx(id) {
+        if(sessionStorage.getItem('role') !== 'admin') return alert("සංශෝධනය කිරීමට අවසර ඇත්තේ ප්‍රධාන කළමනාකරුට පමණි.");
         let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
         let tx = db.find(r => r.id === id);
         if(!tx) return;
@@ -393,6 +442,7 @@
     }
 
     function deleteTx(id, ask = true) {
+        if(sessionStorage.getItem('role') !== 'admin') return alert("දත්ත මකා දැමීමට අවසර ඇත්තේ ප්‍රධාන කළමනාකරුට පමණි.");
         if(ask && !confirm("මකා දැමීමට ඔබ ස්ථිරද?")) return;
         let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
         db = db.filter(r => r.id !== id);
@@ -436,7 +486,7 @@
             title = "මුදල් පොත";
             html = `<table><tr><th>දිනය</th><th>විස්තරය</th><th>කේතය</th><th>ලැබීම් (+)</th><th>ගෙවීම් (-)</th><th>ශේෂය</th><th class="chq-col">නිෂ්කාශණය වීම</th></tr>`;
             let bal = 0;
-            let combined = [...db.map(r=>({...r, isP:false})), ...projs.map(p=>({id:p.id, type:'IN', date:p.date, desc:'Proj: '+p.name, code:'PROJ', amt:p.initialAmt, realized:true}))];
+            let combined = [...db.map(r=>({...r, isP:false})), ...projs.map(p=>({id:p.id, type:'IN', date:p.date, desc:'ව්‍යාපෘති ලැබීම: '+p.name, code:p.incomeCode || 'PROJ', amt:p.initialAmt, realized:true}))];
             combined.sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(r => {
                 bal += (r.type==='IN'?r.amt:-r.amt);
                 let check = (r.type==='EX' && r.cheque !== '-') ? `<input type="checkbox" ${r.realized?'checked':''} ${role==='guest'?'disabled':''} onchange="toggleRealized('${r.id}', this.checked)"><br>${r.realized?'ඔව්':'නැත'}` : '-';
@@ -447,8 +497,9 @@
             html = `<table><tr><th>කේතය</th><th>ලැබීම්</th><th>ගෙවීම්</th><th>ශේෂය</th></tr>`;
             S.forEach(s => {
                 let tin = db.filter(r=>r.code===s && r.type==='IN').reduce((a,b)=>a+b.amt,0);
+                let projIn = projs.filter(p => p.incomeCode === s).reduce((a,b)=>a+b.initialAmt,0);
                 let tout = db.filter(r=>r.source===s && r.type==='EX').reduce((a,b)=>a+b.amt,0);
-                html += `<tr><td>${s}</td><td>${tin.toFixed(2)}</td><td>${tout.toFixed(2)}</td><td><b>${(tin-tout).toFixed(2)}</b></td></tr>`;
+                html += `<tr><td>${s}</td><td>${(tin + projIn).toFixed(2)}</td><td>${tout.toFixed(2)}</td><td><b>${(tin + projIn - tout).toFixed(2)}</b></td></tr>`;
             });
         } else if(type === 'exp_sum') {
             title = "වියදම් සාරාංශය";
@@ -459,10 +510,23 @@
             });
         } else if(type === 'proj_rep') {
             title = "ව්‍යාපෘති වාර්තාව";
-            html = `<table><tr><th>ව්‍යාපෘතිය</th><th>ලැබීම්</th><th>වියදම්</th><th>ශේෂය</th></tr>`;
             projs.forEach(p => {
-                let cost = db.filter(r=>r.proj===p.name).reduce((a,b)=>a+b.amt,0);
-                html += `<tr><td>${p.name}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${cost.toFixed(2)}</td><td><b>${(p.initialAmt-cost).toFixed(2)}</b></td></tr>`;
+                let pExpenses = db.filter(r => r.proj === p.name);
+                let totalExp = pExpenses.reduce((a,b) => a+b.amt, 0);
+                html += `<div style="background:#f9f9f9; padding:15px; border:1px solid #ddd; margin-bottom:20px; border-radius:8px;">`;
+                html += `<h4 style="margin:0; color:var(--project)">ව්‍යාපෘතිය: ${p.name} (කේතය: ${p.incomeCode || 'PROJ'})</h4>`;
+                html += `<p style="font-size:13px;">මුළු ලැබීම: <b>${p.initialAmt.toFixed(2)}</b> | මුළු වියදම: <b class="ex-amt">${totalExp.toFixed(2)}</b> | ශේෂය: <b>${(p.initialAmt - totalExp).toFixed(2)}</b></p>`;
+                
+                if(pExpenses.length > 0) {
+                    html += `<table style="font-size:11px; margin-top:5px;"><tr><th>දිනය</th><th>විස්තරය</th><th>කේතය</th><th>මුදල</th></tr>`;
+                    pExpenses.forEach(ex => {
+                        html += `<tr><td>${ex.date}</td><td>${ex.desc}</td><td>${ex.code}</td><td class="ex-amt">${ex.amt.toFixed(2)}</td></tr>`;
+                    });
+                    html += `</table>`;
+                } else {
+                    html += `<p style="font-size:11px; color:gray italic">වියදම් මෙතෙක් ඇතුළත් කර නොමැත.</p>`;
+                }
+                html += `</div>`;
             });
         } else if(type === 'code_wise') {
             title = "කේතය අනුව වාර්තාව: " + codeFilter;
@@ -472,7 +536,7 @@
             });
         }
         document.getElementById('rep-title').innerText = title;
-        if(type !== 'recon') document.getElementById('rep-body').innerHTML = html + "</table>";
+        if(type !== 'recon') document.getElementById('rep-body').innerHTML = html + (type !== 'proj_rep' ? "</table>" : "");
     }
 
     function calculateRecon() {
@@ -501,7 +565,10 @@
         document.getElementById('dash-stats').innerHTML = `<div class="card"><h4>මුළු ලැබීම්</h4><p class="in-amt">රු. ${tIn.toFixed(2)}</p></div><div class="card"><h4>මුළු ගෙවීම්</h4><p class="ex-amt">රු. ${tEx.toFixed(2)}</p></div><div class="card"><h4>ශේෂය</h4><p>රු. ${(tIn-tEx).toFixed(2)}</p></div>`;
         let fundHtml = '';
         S.forEach(s => {
-            let bal = db.filter(r=>r.code===s && r.type==='IN').reduce((a,b)=>a+b.amt,0) - db.filter(r=>r.source===s && r.type==='EX').reduce((a,b)=>a+b.amt,0);
+            let tin = db.filter(r=>r.code===s && r.type==='IN').reduce((a,b)=>a+b.amt,0);
+            let projIn = projs.filter(p => p.incomeCode === s).reduce((a,b)=>a+b.initialAmt,0);
+            let tout = db.filter(r=>r.source===s && r.type==='EX').reduce((a,b)=>a+b.amt,0);
+            let bal = (tin + projIn) - tout;
             fundHtml += `<div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #ddd; border-left:4px solid var(--accent)"><small>${s}</small><br><b>${bal.toFixed(2)}</b></div>`;
         });
         document.getElementById('dash-fund-grid').innerHTML = fundHtml;
@@ -512,19 +579,24 @@
         const name = document.getElementById('pName').value;
         const amt = parseFloat(document.getElementById('pAmt').value || 0);
         const date = document.getElementById('pDate').value;
+        const incCode = document.getElementById('pIncomeCode').value;
         const editId = document.getElementById('editProjectId').value;
         
-        if(!name || amt <= 0) return alert("විස්තර සම්පූර්ණ කරන්න.");
+        if(!name || amt <= 0 || !date) {
+            alert("අසම්පූර්ණ දත්ත: කරුණාකර ව්‍යාපෘතියේ නම, දිනය සහ මුදල ඇතුළත් කරන්න.");
+            return;
+        }
         
         let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         
         if(editId) {
+            if(sessionStorage.getItem('role') !== 'admin') return alert("සංශෝධනය කිරීමට අවසර ඇත්තේ ප්‍රධාන කළමනාකරුට පමණි.");
             let idx = projs.findIndex(p => p.id === editId);
-            if(idx !== -1) projs[idx] = { ...projs[idx], name, initialAmt: amt, date };
+            if(idx !== -1) projs[idx] = { ...projs[idx], name, initialAmt: amt, date, incomeCode: incCode };
             document.getElementById('editProjectId').value = '';
             document.getElementById('btnProjectAction').innerText = 'සුරකින්න';
         } else {
-            projs.push({ id: 'pj_'+Date.now(), name, initialAmt: amt, date });
+            projs.push({ id: 'pj_'+Date.now(), name, initialAmt: amt, date, incomeCode: incCode });
         }
         
         localStorage.setItem('sch_projs', JSON.stringify(projs));
@@ -536,6 +608,7 @@
     }
 
     function deleteProject(id) {
+        if(sessionStorage.getItem('role') !== 'admin') return alert("මකා දැමීමට අවසර ඇත්තේ ප්‍රධාන කළමනාකරුට පමණි.");
         if(!confirm("මෙම ව්‍යාපෘතිය මකා දැමීමට ඔබ ස්ථිරද? මින් එම ව්‍යාපෘතියට අදාළ වියදම් ඉවත් නොවන බව සලකන්න.")) return;
         let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         projs = projs.filter(p => p.id !== id);
@@ -544,12 +617,14 @@
     }
 
     function editProject(id) {
+        if(sessionStorage.getItem('role') !== 'admin') return alert("සංශෝධනය කිරීමට අවසර ඇත්තේ ප්‍රධාන කළමනාකරුට පමණි.");
         let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         let p = projs.find(x => x.id === id);
         if(!p) return;
         document.getElementById('pName').value = p.name;
         document.getElementById('pAmt').value = p.initialAmt;
         document.getElementById('pDate').value = p.date;
+        document.getElementById('pIncomeCode').value = p.incomeCode || 'S1';
         document.getElementById('editProjectId').value = p.id;
         document.getElementById('btnProjectAction').innerText = 'යාවත්කාලීන කරන්න';
         window.scrollTo(0,0);
@@ -559,11 +634,16 @@
         const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
         const role = sessionStorage.getItem('role');
-        let html = '<table><tr><th>ව්‍යාපෘතිය</th><th>ලැබුණු මුදල</th><th>වියදම්</th><th>ශේෂය</th><th class="admin-only">ක්‍රියාව</th></tr>';
+        let html = '<table><tr><th>ව්‍යාපෘතිය</th><th>කේතය</th><th>ලැබුණු මුදල</th><th>වියදම්</th><th>ශේෂය</th><th>ක්‍රියාව</th></tr>';
         projs.forEach(p => {
             let e = db.filter(r=>r.proj===p.name).reduce((a,b)=>a+b.amt,0);
-            let actions = `<button class="btn-edit" onclick="editProject('${p.id}')">සංශෝධනය</button><button class="btn-del" onclick="deleteProject('${p.id}')">මකන්න</button>`;
-            html += `<tr><td>${p.name}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${e.toFixed(2)}</td><td><b>${(p.initialAmt-e).toFixed(2)}</b></td><td class="admin-only ${role==='guest'?'guest-hide':''}">${actions}</td></tr>`;
+            let actionBtns = '';
+            if(role === 'admin') {
+                actionBtns = `<button class="btn-edit" onclick="editProject('${p.id}')">සංශෝධනය</button><button class="btn-del" onclick="deleteProject('${p.id}')">මකන්න</button>`;
+            } else {
+                actionBtns = `<span style="font-size:10px; color:gray">අවසර නැත</span>`;
+            }
+            html += `<tr><td>${p.name}</td><td>${p.incomeCode || '-'}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${e.toFixed(2)}</td><td><b>${(p.initialAmt-e).toFixed(2)}</b></td><td>${actionBtns}</td></tr>`;
         });
         document.getElementById('projectListTable').innerHTML = html + '</table>';
     }
