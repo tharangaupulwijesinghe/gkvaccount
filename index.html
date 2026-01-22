@@ -2,654 +2,660 @@
 <html lang="si">
 <head>
     <meta charset="UTF-8">
-    <title>මූල්‍ය පද්ධතිය - මො/ගම්පංගුව කනිෂ්ඨ විද්‍යාලය</title>
+    <title>ගිණුම්කරණ පද්ධතිය - මො/ගම්පංගුව කනිෂ්ඨ විද්‍යාලය</title>
     <style>
         :root { 
-            --primary: #1a252f; --secondary: #2c3e50; --accent: #2980b9;
-            --success: #27ae60; --danger: #c0392b; --light: #f4f7f6; --project: #8e44ad;
-            --gold: #f1c40f;
+            --primary: #1b5e20; 
+            --secondary: #2e7d32; 
+            --accent: #fbc02d; 
+            --success: #27ae60; 
+            --danger: #e74c3c; 
+            --light: #f9fbe7; 
+            --gold: #ffeb3b; 
+            --white: #ffffff; 
+            --purple: #8e44ad;
+            --deep-blue: #0984e3;
+            --glass: rgba(255, 255, 255, 0.1);
         }
-        body { font-family: 'Segoe UI', 'Iskoola Pota', Arial, sans-serif; margin: 0; display: flex; background: var(--light); flex-direction: column; }
+        body { font-family: 'Segoe UI', 'Iskoola Pota', sans-serif; margin: 0; background: var(--light); display: flex; }
         
-        #login-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary);
-            display: flex; justify-content: center; align-items: center; z-index: 9999;
-        }
-        .login-box { background: white; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-
-        .top-header { 
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white; padding: 30px 20px; text-align: center; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 101;
-        }
-        /* පාසලේ නම විශාල කිරීම */
-        .top-header h1 { margin: 0; font-size: 42px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .top-header h2 { margin: 10px 0 0; font-size: 24px; font-weight: 300; color: #ecf0f1; }
-
-        .app-container { display: none; width: 100%; }
-
-        .sidebar { width: 280px; height: calc(100vh - 100px); background: var(--primary); color: white; position: fixed; top: 125px; padding-top: 10px; box-shadow: 2px 0 10px rgba(0,0,0,0.3); z-index: 100; overflow-y: auto; }
-        .nav-link { padding: 12px 20px; display: block; color: #bdc3c7; text-decoration: none; cursor: pointer; transition: 0.3s; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .nav-link:hover, .nav-link.active { background: var(--secondary); color: white; border-left: 5px solid var(--accent); }
-
-        .main-content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); margin-top: 60px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .sidebar { width: 280px; height: 100vh; background: var(--primary); color: white; position: fixed; overflow-y: auto; box-shadow: 2px 0 15px rgba(0,0,0,0.2); z-index: 100; display: flex; flex-direction: column; }
+        .sidebar-header { text-align: center; padding: 25px 15px; background: #0a3d0e; color: var(--gold); font-weight: bold; font-size: 18px; border-bottom: 3px solid var(--gold); }
+        .nav-link { padding: 15px 20px; display: block; color: #dcedc8; text-decoration: none; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; font-size: 15px; }
+        .nav-link:hover, .nav-link.active { background: var(--secondary); color: var(--gold); border-left: 5px solid var(--gold); padding-left: 25px; }
         
-        .row { display: flex; gap: 20px; margin-bottom: 15px; }
+        .main-content { margin-left: 280px; padding: 30px; width: calc(100% - 280px); position: relative; min-height: 100vh; }
+        
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 35px; perspective: 1000px; }
+        .stat-card { 
+            padding: 30px; border-radius: 20px; color: white; text-align: center; 
+            transition: transform 0.5s, box-shadow 0.5s; 
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .stat-card:hover { 
+            transform: rotateX(10deg) rotateY(-5deg) translateY(-10px); 
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+        }
+        .stat-card h5 { margin: 0; font-size: 16px; opacity: 0.9; text-transform: uppercase; }
+        .stat-card h2 { margin: 10px 0 0; font-size: 32px; font-weight: 800; }
+
+        .fund-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .fund-box { 
+            padding: 20px; border-radius: 15px; color: white; text-align: center; font-weight: bold; 
+            cursor: pointer; transition: 0.3s; border-bottom: 5px solid rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; justify-content: center; min-height: 80px;
+        }
+        .fund-box:hover { transform: scale(1.05); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
+        .fund-box small { font-size: 11px; opacity: 0.8; margin-top: 5px; }
+
+        .school-header-banner { 
+            background: linear-gradient(135deg, #1b5e20 0%, #388e3c 100%); 
+            color: var(--gold); padding: 50px 20px; text-align: center; border-radius: 25px; 
+            margin-bottom: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 2px solid var(--gold);
+        }
+
+        .card { background: var(--white); padding: 30px; border-radius: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .section-title { color: var(--primary); border-left: 6px solid var(--accent); padding-left: 15px; margin-bottom: 25px; font-size: 24px; font-weight: bold; }
+        
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        th, td { padding: 15px; border: 1px solid #eee; text-align: left; }
+        th { background: var(--primary); color: var(--gold); font-weight: 600; text-transform: uppercase; font-size: 13px; }
+        tr:hover { background-color: #f1f8e9; }
+
+        .form-row { display: flex; gap: 20px; margin-bottom: 20px; }
         .field { flex: 1; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; font-size: 13px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box; background: #fafafa; }
-        
-        button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-save { background: var(--success); color: white; width: 100%; }
-        .btn-proj { background: var(--project); color: white; width: 100%; }
-        .btn-print { background: var(--accent); color: white; margin-top: 20px; padding: 10px 30px; }
-        .btn-pdf { background: #555; color: white; margin-top: 20px; padding: 10px 30px; margin-left: 10px; }
-        .btn-del { background: #e74c3c; color: white; padding: 5px 10px; font-size: 11px; border-radius: 4px; border: none; }
-        .btn-edit { background: var(--gold); color: black; padding: 5px 10px; font-size: 11px; border-radius: 4px; border: none; margin-right: 5px; }
-        .btn-logout { background: #555; color: white; margin: 20px; font-size: 12px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--secondary); }
+        input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid #dcedc8; border-radius: 10px; transition: 0.3s; }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 5px rgba(27, 94, 32, 0.2); }
+        .btn { padding: 14px 25px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn:active { transform: scale(0.98); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th { background: #f8f9fa; color: var(--primary); padding: 12px; border: 1px solid #dee2e6; text-align: left; font-size: 13px; }
-        td { padding: 10px; border: 1px solid #dee2e6; font-size: 13px; }
-        
-        .in-amt { color: var(--success); font-weight: bold; }
-        .ex-amt { color: var(--danger); font-weight: bold; }
-        .guest-hide { display: none !important; }
-        .staff-hide { display: none !important; }
-
-        .chq-col { width: 85px; font-size: 10px !important; text-align: center; padding: 5px !important; }
-        .chq-col input { width: 14px; height: 14px; vertical-align: middle; cursor: pointer; }
-
-        .opening-bal-compact { border-left: 5px solid var(--gold); padding: 15px !important; margin-top: 10px; }
-        .opening-bal-compact h4 { margin: 0 0 10px 0; font-size: 14px; }
-        .compact-row { display: flex; gap: 10px; align-items: flex-end; }
-        .compact-row .field { flex: 1; }
-        .compact-row input, .compact-row select { padding: 6px; font-size: 12px; }
-
-        .designer-tag { 
-            position: relative; margin-top: 20px; width: 100%; text-align: center; 
-            padding: 10px 0; background: rgba(0,0,0,0.2); color: var(--gold); 
-            font-weight: bold; font-size: 13px; border-top: 1px solid var(--accent);
+        .creator-brand {
+            margin-top: auto;
+            padding: 30px 15px;
+            text-align: center;
+            background: #0a3d0e;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
-
-        .footer-note { text-align: center; font-size: 14px; color: var(--primary); margin-top: 30px; font-weight: bold; padding: 20px; border-top: 2px solid var(--accent); }
-        #sync-status { font-size: 11px; color: #f1c40f; padding: 5px 25px; }
-
-        .filter-box { background: #eef2f3; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #d1d8e0; }
-
-        /* Guide Styles */
-        .guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .guide-card { border-radius: 8px; border: 1px solid #ddd; overflow: hidden; }
-        .guide-head { padding: 10px; color: white; font-weight: bold; text-align: center; }
-        .guide-table { width: 100%; font-size: 12px; border: none; margin-top: 0; }
-        .guide-table tr:nth-child(even) { background: #f9f9f9; }
-        .guide-table td { border: none; border-bottom: 1px solid #eee; }
-        .c-badge { background: #eee; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #333; }
-
-        @media print { 
-            .sidebar, button, .no-print, .designer-tag, .btn-del, .btn-edit, input[type="checkbox"], .filter-box { display: none !important; }
-            .main-content { margin-left: 0; width: 100%; padding: 0; margin-top: 0; }
-            .top-header { background: white !important; color: black !important; border-bottom: 2px solid black; }
+        .creator-name {
+            display: block;
+            color: var(--gold);
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 5px;
         }
+        .creator-sub { color: #aed581; font-size: 11px; }
+
+        .code-tag-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .code-tag { background: #fdfdfd; border: 1px solid #eee; padding: 12px; border-radius: 12px; display: flex; align-items: center; }
+        .code-num { background: var(--primary); color: var(--gold); padding: 4px 10px; border-radius: 6px; margin-right: 12px; font-family: monospace; font-weight: bold; }
+
+        #loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 10000; font-weight: bold; color: var(--primary); }
+        @media print { .sidebar, .no-print { display: none !important; } .main-content { margin-left: 0; width: 100%; } }
+        #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        
+        .admin-only, .staff-only { display: none; }
     </style>
 </head>
 <body>
 
+<div id="loading-overlay">දත්ත සැකසෙමින් පවතී... කරුණාකර රැඳී සිටින්න.</div>
+
 <div id="login-overlay">
-    <div class="login-box">
-        <h2 style="color: var(--primary)">පද්ධතියට ඇතුළු වීම</h2>
-        <input type="password" id="passInput" placeholder="මුරපදය ඇතුළත් කරන්න" style="margin-bottom: 15px; text-align: center;">
-        <button class="btn-save" onclick="checkLogin()">ඇතුළු වන්න</button>
-        <p style="font-size: 11px; color: #666; margin-top: 10px;">පරිශීලක අනුමැතිය මත පිවිසෙන්න.</p>
+    <div class="card" style="text-align:center; width: 380px; padding: 50px;">
+        <h2 style="color:var(--primary); margin-bottom: 5px;">මුදල් පාලන පද්ධතිය</h2>
+        <p style="color: #666; margin-bottom: 30px;">මො/ගම්පංගුව කනිෂ්ඨ විද්‍යාලය</p>
+        <input type="password" id="passInput" placeholder="මුරපදය ඇතුළත් කරන්න" style="text-align:center; margin-bottom:20px; font-size: 18px;">
+        <button class="btn" style="width:100%; background: var(--primary); color: var(--gold);" onclick="checkLogin()">පද්ධතියට ඇතුළු වන්න</button>
+        <div style="margin-top:30px;">
+            <span style="color:var(--primary); font-weight: bold; font-size: 14px;">Created by: Tharanga Wijesinghe</span>
+        </div>
     </div>
 </div>
 
-<div class="top-header">
-    <h1>මො/ගම්පංගුව කනිෂ්ඨ විද්‍යාලය</h1>
-    <h2>පාසල් මූල්‍ය ගිණුම්කරණ පද්ධතිය</h2>
+<div class="sidebar no-print">
+    <div class="sidebar-header">මො/ගම්පංගුව කනිෂ්ඨ විද්‍යාලය</div>
+    <div style="padding-top: 10px;">
+        <a class="nav-link active" id="nav-dash" onclick="showSec('dash')">📊 ප්‍රධාන පුවරුව</a>
+        <a class="nav-link staff-only" id="nav-entry" onclick="showSec('entry')">📝 දත්ත ඇතුළත් කිරීම</a>
+        <a class="nav-link staff-only" id="nav-proj" onclick="showSec('proj')">🏗️ ව්‍යාපෘති</a>
+        <a class="nav-link" id="nav-cashbook" onclick="openReport('CASHBOOK')">📖 මුදල් පොත</a>
+        <a class="nav-link" id="nav-inc" onclick="openReport('IN')">📈 ලැබීම් වාර්තා</a>
+        <a class="nav-link" id="nav-exp" onclick="openReport('EX')">📉 ගෙවීම් වාර්තා</a>
+        <a class="nav-link" id="nav-bank" onclick="openReport('BANK')">🏦 බැංකු සැසඳුම</a>
+        <a class="nav-link" id="nav-codes" onclick="showSec('codes')">🔑 ගිණුම් කේත විස්තරය</a>
+    </div>
+    
+    <div style="padding: 20px;"><button class="btn" style="background:var(--danger); color:white; width:100%;" onclick="location.reload()">ඉවත් වන්න</button></div>
+    
+    <div class="creator-brand">
+        <span class="creator-sub">Designed & Developed by</span>
+        <span class="creator-name">THARANGA WIJESINGHE</span>
+        <span class="creator-sub">© 2025 All Rights Reserved</span>
+    </div>
 </div>
 
-<div class="app-container" id="appBody">
-    <div class="sidebar no-print">
-        <div id="sync-status">සම්බන්ධ වෙමින්...</div>
-        <a class="nav-link active" onclick="showSec('dash')">📊 ප්‍රධාන පුවරුව</a>
-        <a class="nav-link admin-only staff-only" id="nav-entry" onclick="showSec('entry')">📝 දත්ත ඇතුළත් කිරීම</a>
-        <a class="nav-link admin-only staff-only" id="nav-projects" onclick="showSec('projects')">🏗️ විශේෂ ව්‍යාපෘති</a>
-        <a class="nav-link" onclick="prepareReport('cash')">📖 මුදල් පොත</a>
-        <a class="nav-link" onclick="prepareReport('fund')">💰 ලැබීම් සාරාංශය</a>
-        <a class="nav-link" onclick="prepareReport('exp_sum')">💸 වියදම් සාරාංශය</a>
-        <a class="nav-link" onclick="prepareReport('code_wise')">🔍 කේත අනුව වාර්තා</a>
-        <a class="nav-link" onclick="prepareReport('proj_rep')">📋 ව්‍යාපෘති වාර්තාව</a>
-        <a class="nav-link" onclick="prepareReport('recon')">🏦 බැංකු සැසඳුම</a>
-        <a class="nav-link" onclick="showSec('guide')">📘 කේත විස්තරය</a>
+<div class="main-content">
+    <div class="school-header-banner">
+        <h1 style="font-size: 36px; margin: 0;">මො/ගම්පංගුව කනිෂ්ඨ විද්‍යාලය</h1>
+        <div style="margin-top: 10px; font-size: 18px; letter-spacing: 3px; opacity: 0.8;">මූල්‍ය කළමනාකරණ පද්ධතිය</div>
+    </div>
+
+    <div id="sec-dash" class="section">
+        <h2 class="section-title">වත්මන් මූල්‍ය තත්ත්වය</h2>
+        <div class="stat-grid">
+            <div class="stat-card" style="background: var(--primary);">
+                <h5>මුළු ලැබීම් (DR)</h5>
+                <h2 id="dash-in">0.00</h2>
+            </div>
+            <div class="stat-card" style="background: #a5d6a7; color: #1b5e20;">
+                <h5>මුළු වියදම් (CR)</h5>
+                <h2 id="dash-ex">0.00</h2>
+            </div>
+            <div class="stat-card" style="background: var(--accent); color: #1b5e20;">
+                <h5>පවතින ශේෂය</h5>
+                <h2 id="dash-bal">0.00</h2>
+            </div>
+        </div>
         
-        <button class="btn-logout" onclick="logout()">පද්ධතියෙන් ඉවත් වන්න (Logout)</button>
-        <div class="designer-tag">නිර්මාණය: තරංග විජේසිංහ</div>
+        <div class="card" style="background: #fff; border-top: 4px solid var(--accent);">
+            <h3 style="text-align: center; color: var(--primary); margin-bottom: 25px;">අරමුදල් අනුව වත්මන් ශේෂයන්</h3>
+            <p style="text-align:center; font-size: 12px; color: #777;">(ලැබීම් විස්තර බැලීමට බොත්තම මත මවුසය තබන්න)</p>
+            <div class="fund-grid" id="dash-funds"></div>
+        </div>
     </div>
 
-    <div class="main-content">
-        <div id="sec-dash" class="section">
-            <h3>වත්මන් මූල්‍ය තත්ත්වය <span id="user-role-lbl" style="font-size:12px; color:var(--accent)"></span></h3>
-            <div id="dash-stats" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px; margin-bottom:20px;"></div>
-            <div class="card">
-                <h4>අරමුදල් හා ව්‍යාපෘති ශේෂයන්</h4>
-                <div id="dash-fund-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:10px;"></div>
+    <div id="sec-entry" class="section" style="display:none;">
+        <h2 class="section-title">නව ගනුදෙනු ඇතුළත් කිරීම</h2>
+        <div class="form-row">
+            <div class="card field" style="border-top: 8px solid var(--success);">
+                <h3 style="color:var(--success); margin-top: 0;">ලැබීම් (හර)</h3>
+                <input type="hidden" id="edit-id-in">
+                <div class="form-row">
+                    <div class="field"><label>දිනය</label><input type="date" id="inDate"></div>
+                    <div class="field"><label>ලදුපත් අංකය</label><input type="text" id="inRef"></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>ආදායම් කේතය</label><select id="inCodeSelect"></select></div>
+                    <div class="field"><label>මුදල (රු.)</label><input type="number" id="inAmt"></div>
+                </div>
+                <div class="field" style="margin-bottom: 15px;"><label>ව්‍යාපෘතිය</label><select id="inProjSelect"></select></div>
+                <label>විස්තරය</label><textarea id="inDesc" rows="2"></textarea>
+                <button class="btn" style="margin-top:20px; width:100%; background: var(--success); color:white;" id="btn-save-in" onclick="saveData('IN')">ලැබීම සුරකින්න</button>
+            </div>
+
+            <div class="card field" style="border-top: 8px solid var(--danger);">
+                <h3 style="color:var(--danger); margin-top: 0;">ගෙවීම් (බැර)</h3>
+                <input type="hidden" id="edit-id-ex">
+                <div class="form-row">
+                    <div class="field"><label>දිනය</label><input type="date" id="exDate"></div>
+                    <div class="field"><label>වවුචර අංකය</label><input type="text" id="exVoucher"></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>චෙක්පත් අංකය</label><input type="text" id="exRef"></div>
+                    <div class="field"><label>මුදල (රු.)</label><input type="number" id="exAmt"></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>වියදම් කේතය</label><select id="exCodeSelect"></select></div>
+                    <div class="field"><label>මූලාශ්‍ර අරමුදල</label><select id="exSourceSelect"></select></div>
+                </div>
+                <div class="field" style="margin-bottom: 15px;"><label>ව්‍යාපෘතිය</label><select id="exProjSelect"></select></div>
+                <label>විස්තරය</label><textarea id="exDesc" rows="2"></textarea>
+                <button class="btn" style="margin-top:20px; width:100%; background: var(--danger); color:white;" id="btn-save-ex" onclick="saveData('EX')">ගෙවීම සුරකින්න</button>
             </div>
         </div>
 
-        <div id="sec-entry" class="section" style="display:none;">
-            <div class="row">
-                <div class="card field">
-                    <h3 class="in-amt">ලැබීම් (Receipts)</h3>
-                    <div class="row"><div class="field"><label>දිනය</label><input type="date" id="inDate"></div><div class="field"><label>ලදුපත් අංකය</label><input type="text" id="inRef"></div></div>
-                    <div class="row"><div class="field"><label>කේතය</label><select id="inCode"></select></div><div class="field"><label>මුදල</label><input type="number" id="inAmt"></div></div>
-                    <label>විස්තරය</label><textarea id="inDesc" rows="2" style="margin-bottom:15px;"></textarea>
-                    <button class="btn-save" onclick="addTx('IN')">ලැබීම සුරකින්න</button>
-                </div>
-                <div class="card field">
-                    <h3 class="ex-amt">ගෙවීම් (Payments)</h3>
-                    <div class="row"><div class="field"><label>දිනය</label><input type="date" id="exDate"></div><div class="field"><label>වවුචරය</label><input type="text" id="exRef"></div></div>
-                    <div class="row"><div class="field"><label>වියදම් කේතය</label><select id="exCode"></select></div><div class="field"><label>මුදල</label><input type="number" id="exAmt"></div></div>
-                    <div class="row"><div class="field"><label>මූලාශ්‍රය</label><select id="exSource"></select></div><div class="field"><label>ව්‍යාපෘතිය</label><select id="exProjLink"></select></div></div>
-                    <div class="row"><div class="field"><label>චෙක්පත් අංකය</label><input type="text" id="exCheque"></div></div>
-                    <label>විස්තරය</label><textarea id="exDesc" rows="2" style="margin-bottom:15px;"></textarea>
-                    <button class="btn-save" style="background:var(--danger)" onclick="addTx('EX')">ගෙවීම සුරකින්න</button>
-                </div>
-            </div>
-
-            <div class="card admin-only opening-bal-compact">
-                <h4>වර්ෂය ආරම්භක ශේෂයන්</h4>
-                <div class="compact-row">
-                    <div class="field"><label>කේතය</label><select id="openCode"></select></div>
-                    <div class="field"><label>දිනය</label><input type="date" id="openDate"></div>
-                    <div class="field"><label>ශේෂය</label><input type="number" id="openAmt"></div>
-                    <div class="field"><button class="btn-save" style="background:var(--gold); color:black; padding: 7px;" onclick="addOpeningBal()">එක් කරන්න</button></div>
-                </div>
-            </div>
-
-            <div class="card admin-only staff-only" style="margin-top: 20px;">
-                <h3 style="color: var(--accent);">අවසාන දත්ත ඇතුළත් කිරීම් 5</h3>
-                <div id="recent-transactions-list"></div>
-            </div>
-        </div>
-
-        <div id="sec-projects" class="section" style="display:none;">
-            <div class="card admin-only staff-only">
-                <h3>නව ව්‍යාපෘතියක් එක් කිරීම</h3>
-                <input type="hidden" id="editProjectId">
-                <div class="row">
-                    <div class="field"><label>නම</label><input type="text" id="pName"></div>
-                    <div class="field"><label>කේතය (Income Code)</label><select id="pIncomeCode"></select></div>
-                    <div class="field"><label>ලැබුණු මුදල</label><input type="number" id="pAmt"></div>
-                    <div class="field"><label>දිනය</label><input type="date" id="pDate"></div>
-                    <div class="field" style="align-self:flex-end;">
-                        <button class="btn-proj" id="btnProjectAction" onclick="addProject()">සුරකින්න</button>
-                    </div>
-                </div>
-            </div>
-            <div class="card"><div id="projectListTable"></div></div>
-        </div>
-
-        <div id="sec-report" class="section" style="display:none;">
-            <div class="card">
-                <h2 id="rep-title" style="text-align:center;">වාර්තාව</h2>
-                
-                <div id="filter-area" class="filter-box no-print">
-                    <div class="row">
-                        <div class="field date-filter"><label>සිට (From)</label><input type="date" id="fDate"></div>
-                        <div class="field date-filter"><label>දක්වා (To)</label><input type="date" id="tDate"></div>
-                        <div id="code-filter-field" class="field" style="display:none;">
-                            <label>කේතය තෝරන්න</label><select id="filterCodeSelect"></select>
-                        </div>
-                        <div class="field" style="align-self:flex-end;">
-                            <button class="btn-save" style="width:auto; padding:10px 25px;" onclick="runFilteredReport()">වාර්තාව යාවත්කාලීන කරන්න</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="recon-inputs" class="no-print" style="display:none; background:#f9f9f9; padding:15px; margin-bottom:20px; border-radius:8px;">
-                    <label>බැංකු ප්‍රකාශනයේ ශේෂය (Bank Statement Balance):</label>
-                    <input type="number" id="bankStatementAmt" style="width:200px; display:inline-block; margin:10px 0;">
-                    <button class="btn-save" style="width:auto; padding:8px 20px;" onclick="calculateRecon()">සැසදුම සාදන්න</button>
-                </div>
-
-                <div id="rep-body"></div>
-                <button class="btn-print no-print" onclick="window.print()">මුද්‍රණය කරන්න (Print)</button>
-                <button class="btn-pdf no-print" onclick="window.print()">PDF ලෙස සුරකින්න</button>
-                <div class="footer-note">නිර්මාණය හා පද්ධති කළමනාකරණය:තරංග විජේසිංහ-0777944308</div>
-            </div>
-        </div>
-
-        <div id="sec-guide" class="section" style="display:none;">
-            <div class="card">
-                <h3 style="color: var(--primary); text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px;">📘 පාසල් මූල්‍ය පද්ධති කේත විස්තර මාර්ගෝපදේශය</h3>
-                <div class="guide-grid">
-                    <div class="guide-card">
-                        <div class="guide-head" style="background: var(--success);">ලැබීම් කේත (Income Codes)</div>
-                        <table class="guide-table">
-                            <tr><td><span class="c-badge">S1</span></td><td>ඒකාබද්ධ අරමුදල් සහ පළාත් සභා අරමුදල්</td></tr>
-                            <tr><td><span class="c-badge">S2</span></td><td>සහයෝගිතා ගිවිසු යටතේ ක්‍රියාත්මක වන වැඩසටහන හා ව්‍යාපෘති සදහා ලැබෙන අරමුදල්</td></tr>
-                            <tr><td><span class="c-badge">S3</span></td><td>රජයේ ආධාර</td></tr>
-                            <tr><td><span class="c-badge">S4</span></td><td>පාසල් පාදක ඉගෙනුම් ප්‍රවර්දන ප්‍රදානයන් , ගුණාත්මක යෙදවුම් හා උසස් මට්ටමේ ඉගෙනුම් ක්‍රියාවලි සදහා ලැබෙන අරමුදල්</td></tr>
-                            <tr><td><span class="c-badge">S5</span></td><td>රජය විසින් අනුමත හා ලියාපදිංචි රාජ්‍ය නොවන සංවිධාන වලින් ලැබෙන ආධාර</td></tr>
-                            <tr><td><span class="c-badge">S6</span></td><td>පාසලේ දියුණුව වෙනුවෙන් ස්ව කැමැත්තෙන් දයකත්වය ලබා දෙන ඕනෑම පාර්ශවයක පරිත්‍යග</td></tr>
-                            <tr><td><span class="c-badge">S7</span></td><td>පාසලට අයත් වත්කම් වලින් උපයා ගන්නා ආදායම්</td></tr>
-                            <tr><td><span class="c-badge">S8</span></td><td>පාසල් සංවර්ධන සමිති සාමාජික මුදල්</td></tr>
-                            <tr><td><span class="c-badge">S9</span></td><td>පාසලේ ඉගෙනුම් ඉගැන්වීම් ක්‍රියාවලියට අදාල අත්‍යවශ්‍ය ක්‍රියාකාරකම් සදහා ලැබීම්</td></tr>
-                            <tr><td><span class="c-badge">S10</span></td><td>පාසල් සංවර්ධන සමිතිය මගින් තීරණය කරණු ලබන පාසලේ අත්‍වශ වියදම් පියවා ගැනීම සදහා අරමුදල් </td></tr>
-                        </table>
-                    </div>
-                    <div class="guide-card">
-                        <div class="guide-head" style="background: var(--danger);">වියදම් කේත (Expenditure Codes)</div>
-                        <table class="guide-table">
-                            <tr><td><span class="c-badge">REx1</span></td><td>විෂය මාලා ක්‍රියාත්මක කිරීමට අදාල පුනරාවර්තන වියදම්</td></tr>
-                            <tr><td><span class="c-badge">REx2</span></td><td>උපදේශන , උසස් අධ්‍යාපන හා විෂය සමගාමී ක්‍රියාකාරකම්</td></tr>
-                            <tr><td><span class="c-badge">REx3</span></td><td>අධ්‍යාපන පරිපාලන හා උපයෝගිතා  සේවා හා ශුභසාධන කටයුතු</td></tr>
-                            <tr><td><span class="c-badge">REx4</span></td><td>කාර්ය මණ්ඩල පාරිශ්‍රමික</td></tr>
-                            <tr><td><span class="c-badge">REx5</span></td><td>ප්‍රාග්ධන භාණ්ඩ හා උපකරණ නඩත්තු/අලුත්වැඩියා</td></tr>
-                            <tr><td><span class="c-badge">REx6</span></td><td>පාසලේ ගොඩනැගිලි සුළු නඩත්තු/අලුත්වැඩියා</td></tr>
-                            <tr><td><span class="c-badge">REx7</span></td><td>පවිත්‍රතා හා පිරිසිදු කිරීම්</td></tr>
-                            <tr><td><span class="c-badge">CEx1</span></td><td>මූලික පහසුකම් - නව සැපයීම්</td></tr>
-                            <tr><td><span class="c-badge">CEx2</span></td><td>විෂය මාලා ක්‍රියාත්මක කිරීමට අදාල ප්‍රාග්ධන වියදම්</td></tr>
-                            <tr><td><span class="c-badge">CEx3</span></td><td>පුස්තකාල පොත් මිලට ගැනීම්</td></tr>
-                            <tr><td><span class="c-badge">CEx4</span></td><td>ගොඩනැගිලි  නව ඉදිකිරීම්, වැඩිදියුණු කිරීම් හා වෙනත් ප්‍රාග්ධන වියදම්</td></tr>
-                            <tr><td><span class="c-badge">CEx5</span></td><td>ප්‍රාග්ධන උපකරණ මිලට ගැනීම්</td></tr>
-                            <tr><td><span class="c-badge">CEx6</span></td><td>විශේෂ ව්‍යාපෘති සදහා විශේෂ ප්‍රාග්ධන ආධාර</td></tr>
-                        </table>
-                    </div>
+        <div class="card admin-only">
+            <h4 onclick="toggleOpeningSec()" style="cursor:pointer; color:var(--primary); text-align: center;">⚙️ ආරම්භක ශේෂයන් ඇතුළත් කිරීමට මෙහි ක්ලික් කරන්න</h4>
+            <div id="op-sec" style="display:none; padding:20px; border:2px dashed #ddd; border-radius:15px; margin: 20px 0;">
+                <div class="form-row">
+                    <div class="field"><label>අරමුදල</label><select id="opCodeSelect"></select></div>
+                    <div class="field"><label>ආරම්භක ශේෂය</label><input type="number" id="opAmt"></div>
+                    <button class="btn" style="align-self: flex-end; background: var(--accent); color: var(--primary);" onclick="saveOpening()">ශේෂය එක් කරන්න</button>
                 </div>
             </div>
         </div>
+        <div class="card">
+            <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">මෑතකාලීන ගනුදෙනු</h3>
+            <div id="recent-transactions-table" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <div id="sec-proj" class="section" style="display:none;">
+        <h2 class="section-title">ව්‍යාපෘති කළමනාකරණය</h2>
+        <div class="card">
+            <div class="form-row">
+                <input type="hidden" id="edit-proj-id">
+                <div class="field"><label>ව්‍යාපෘති නාමය</label><input type="text" id="projName" placeholder="උදා: තාප්පය ඉදිකිරීම"></div>
+                <div class="field"><label>ඇස්තමේන්තුව (රු.)</label><input type="number" id="projEst"></div>
+                <button class="btn" style="align-self: flex-end; background: var(--primary); color: var(--gold);" onclick="saveProject()">ව්‍යාපෘතිය සුරකින්න</button>
+            </div>
+        </div>
+        <div class="card"><div id="project-list-table"></div></div>
+        
+        <div id="proj-detail-view" class="card" style="display:none; border-top: 5px solid var(--primary);">
+            <h3 id="detail-proj-name" style="color:var(--primary);"></h3>
+            <div id="project-expenses-list"></div>
+            <button class="btn" style="margin-top:20px; background:#95a5a6; color:white;" onclick="document.getElementById('proj-detail-view').style.display='none'">වසන්න</button>
+        </div>
+    </div>
+
+    <div id="sec-report" class="section" style="display:none;">
+        <div id="printable-area" class="card">
+            <h2 id="report-header-title" style="text-align:center; color: var(--primary);"></h2>
+            <p id="report-date-range" style="text-align:center; font-weight:bold;"></p>
+            <div id="report-content"></div>
+            
+            <div class="no-print" style="margin-top:30px; display:flex; gap:15px; background:#f9f9f9; padding:25px; border-radius:15px; border: 1px solid #eee;">
+                <div class="field"><label>සිට</label><input type="date" id="repFrom"></div>
+                <div class="field"><label>දක්වා</label><input type="date" id="repTo"></div>
+                <div class="field" id="filter-box" style="display:none;"><label>ගිණුම් කේතය</label><select id="repFilter"></select></div>
+                <button class="btn" style="align-self: flex-end; background: var(--primary); color: var(--gold);" onclick="generateReport()">වාර්තාව සකසන්න</button>
+                <button class="btn" style="align-self: flex-end; background: var(--secondary); color: white;" onclick="window.print()">Print Report</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-codes" class="section" style="display:none;">
+        <h2 class="section-title">ගිණුම් කේත සහ විස්තර</h2>
+        <div class="form-row">
+            <div class="card field" style="border-top: 5px solid var(--primary);">
+                <h3 style="color:var(--primary);">ආදායම් කේත (S-Codes)</h3>
+                <div id="codes-s" class="code-tag-container"></div>
+            </div>
+            <div class="card field" style="border-top: 5px solid var(--danger);">
+                <h3 style="color:var(--danger);">වියදම් කේත (Expense Codes)</h3>
+                <div id="codes-ex" class="code-tag-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-credit no-print" style="text-align: center; color: #999; padding: 40px;">
+        පද්ධති නිර්මාණය : තරංග විජේසිංහ | 0777944308
     </div>
 </div>
 
 <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuT7SdENJsFlXTf7o_tV2l20d-iu3K9IlRLYex6GYx9zT_RKLw9qtJv-1fKQL2NUVJ/exec";
-    
-    // Passwords for 3 user levels
-    const PASSWORDS = {
-        admin: "Tharanga_Bunny",  // Super User
-        staff: "Staff123",  // Data Entry (Can Add, cannot delete/edit)
-        guest: "Guest"      // View Only
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmSGS_JXsNWsbxgGQjR7bL2nUlJr-PAmBFyjVwk8rXCG8rESQSjkIMXto6WTRCu_UniA/exec";
+
+    const S_CODES = ["S1","S2","S3","S4","S5","S6","S7","S8","S9","S10"];
+    const EX_CODES = ["REx1","REx2","REx3","REx4","REx5","REx6","REx7","CEx1","CEx2","CEx3","CEx4","CEx5","CEx6"];
+    const CODE_INFO = {
+        "S1":"ඒකාබද්ධ අරමුදල් සහ පළාත් සභා අරමුදල්", "S2":"සහයෝගිතා ගිවිසුම් යටතේ ක්‍රියාත්මක වන වැඩසටහන් හා ව්‍යාපෘති සඳහා ලැබෙන අරමුදල්", "S3":"රජයේ ආධාර", "S4":"පාසල් පාදක ඉගෙනුම් ප්‍රවර්ධන ප්‍රදානයන්, ගුණාත්මක යෙදවුම් හා උසස් මට්ටමේ ඉගෙනුම් ක්‍රියාවලි සඳහා ලැබෙන අරමුදල්", "S5":"රජය විසින් අනුමත හා ලියාපදිංචි රාජ්‍ය නොවන සංවිධාන වලින් ලැබෙන ආධාර", "S6":"පාසලේ දියුණුව වෙනුවෙන් ස්ව කැමැත්තෙන් දායකත්වය ලබා දෙන ඕනෑම පාර්ශවයක පරිත්‍යාග", "S7":"පාසලට අයත් වත්කම් වලින් උපයා ගන්නා ආදායම්", "S8":"පාසල් සංවර්ධන සමිති සාමාජික මුදල්", "S9":"පාසලේ ඉගෙනුම් ඉගැන්වීම් ක්‍රියාවලියට අදාළ අත්‍යවශ්‍ය ක්‍රියාකාරකම් සඳහා ලැබීම්", "S10":"පාසල් සංවර්ධන සමිතිය මඟින් තීරණය කරනු ලබන පාසලේ අත්‍යවශ්‍ය වියදම් පියවා ගැනීම සඳහා වන අරමුදල්",
+        "REx1":"විෂය මාලා ක්‍රියාත්මක කිරීමට අදාළ පුනරාවර්තන වියදම්", "REx2":"උපදේශන, උසස් අධ්‍යාපන හා විෂය සමගාමී ක්‍රියාකාරකම්", "REx3":"අධ්‍යාපන පරිපාලන හා උපයෝගිතා සේවා හා සුභසාධන කටයුතු", "REx4":"කාර්ය මණ්ඩල පාරිශ්‍රමික", "REx5":"ප්‍රාග්ධන භාණ්ඩ හා උපකරණ නඩත්තු/අලුත්වැඩියා", "REx6":"පාසලේ ගොඩනැගිලි සුළු නඩත්තු/අලුත්වැඩියා", "REx7":"පවිත්‍රතා හා පිරිසිදු කිරීම්", 
+        "CEx1":"මූලික පහසුකම් - නව සැපයීම්", "CEx2":"විෂය මාලා ක්‍රියාත්මක කිරීමට අදාළ ප්‍රාග්ධන වියදම්", "CEx3":"පුස්තකාල පොත් මිලට ගැනීම්", "CEx4":"ගොඩනැගිලි නව ඉදිකිරීම්, වැඩිදියුණු කිරීම් හා වෙනත් ප්‍රාග්ධන වියදම්", "CEx5":"ප්‍රාග්ධන උපකරණ මිලට ගැනීම්", "CEx6":"විශේෂ ව්‍යාපෘති සඳහා විශේෂ ප්‍රාග්ධන ආධාර"
     };
+    const COLORS = ["#2e7d32", "#f9a825", "#388e3c", "#fbc02d", "#43a047", "#fdd835", "#4caf50", "#ffeb3b", "#66bb6a", "#ffee58"];
 
-    const S = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"];
-    const EX = ["REx1", "REx2", "REx3", "REx4", "REx5", "REx6", "REx7", "CEx1", "CEx2", "CEx3", "CEx4", "CEx5", "CEx6"];
+    let currentReport = '';
+    let userRole = '';
 
-    let currentReportType = '';
-
-    window.onload = () => { if(sessionStorage.getItem('isLogged')) unlockApp(); };
-
-    function checkLogin() {
-        let p = document.getElementById('passInput').value;
-        if(p === PASSWORDS.admin) { sessionStorage.setItem('isLogged', 't'); sessionStorage.setItem('role', 'admin'); unlockApp(); }
-        else if(p === PASSWORDS.staff) { sessionStorage.setItem('isLogged', 't'); sessionStorage.setItem('role', 'staff'); unlockApp(); }
-        else if(p === PASSWORDS.guest) { sessionStorage.setItem('isLogged', 't'); sessionStorage.setItem('role', 'guest'); unlockApp(); }
-        else alert("මුරපදය වැරදියි!");
-    }
-
-    function logout() {
-        sessionStorage.clear();
-        location.reload();
-    }
-
-    function unlockApp() {
-        let role = sessionStorage.getItem('role');
+    async function checkLogin() {
+        const pass = document.getElementById('passInput').value;
+        if(pass === "MyApp") { userRole = 'ADMIN'; } 
+        else if(pass === "Staff123") { userRole = 'STAFF'; } 
+        else if(pass === "Guest") { userRole = 'GUEST'; } 
+        else { alert("මුරපදය වැරදියි!"); return; }
+        
         document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('appBody').style.display = 'flex';
-        
-        let roleName = "බැලීමට පමණි";
-        if(role==='admin') roleName = "ප්‍රධාන කළමනාකරු (Admin)";
-        if(role==='staff') roleName = "දත්ත ඇතුළත් කරන්නා (Staff)";
-        document.getElementById('user-role-lbl').innerText = `(${roleName})`;
-
-        // Visual Permissions
-        if(role === 'guest') {
-            document.getElementById('nav-entry').style.display = 'none';
-            document.getElementById('nav-projects').style.display = 'none';
-        } else {
-            document.getElementById('nav-entry').style.display = 'block';
-            document.getElementById('nav-projects').style.display = 'block';
-        }
-        
-        setupDrops(); refreshDash(); syncFromCloud();
+        applyPermissions();
+        await fetchRemoteData(); 
+        init();
     }
 
-    async function syncToCloud() {
-        if(sessionStorage.getItem('role') === 'guest') return;
-        document.getElementById('sync-status').innerText = "සුරැකෙමින්...";
-        const data = { db: localStorage.getItem('sch_db'), projs: localStorage.getItem('sch_projs') };
-        try { await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); document.getElementById('sync-status').innerText = "Cloud සමග සම්බන්ධයි ✅"; }
-        catch(e) { document.getElementById('sync-status').innerText = "Sync අසාර්ථකයි ⚠️"; }
-    }
-
-    async function syncFromCloud() {
+    async function fetchRemoteData() {
+        if(!GOOGLE_SCRIPT_URL.includes("http")) return;
+        toggleLoading(true);
         try {
-            const res = await fetch(GOOGLE_SCRIPT_URL);
-            const cloudData = await res.json();
-            if(cloudData.db) localStorage.setItem('sch_db', cloudData.db);
-            if(cloudData.projs) localStorage.setItem('sch_projs', cloudData.projs);
-            setupDrops(); refreshDash();
-        } catch(e) { console.log("Cloud sync error."); }
+            const response = await fetch(GOOGLE_SCRIPT_URL);
+            const data = await response.json();
+            localStorage.setItem('sch_db', JSON.stringify(data));
+        } catch (e) { console.error("Data fetch error", e); }
+        toggleLoading(false);
     }
 
-    function setupDrops() {
-        const inC = document.getElementById('inCode');
-        const exC = document.getElementById('exCode');
-        const exS = document.getElementById('exSource');
-        const opC = document.getElementById('openCode');
-        const filC = document.getElementById('filterCodeSelect');
-        const pIncC = document.getElementById('pIncomeCode');
-
-        const sOptions = S.map(c => `<option>${c}</option>`).join('');
-        inC.innerHTML = sOptions;
-        exC.innerHTML = EX.map(c => `<option>${c}</option>`).join('');
-        exS.innerHTML = sOptions;
-        opC.innerHTML = sOptions;
-        pIncC.innerHTML = sOptions;
-        filC.innerHTML = '<optgroup label="ලැබීම්">' + S.map(c => `<option value="${c}">${c}</option>`).join('') + '</optgroup>' + 
-                         '<optgroup label="වියදම්">' + EX.map(c => `<option value="${c}">${c}</option>`).join('') + '</optgroup>';
-
-        const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        document.getElementById('exProjLink').innerHTML = '<option value="">-- නැත --</option>' + projs.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
-        renderProjectList();
-        renderRecentTransactions();
+    function toggleLoading(show) {
+        document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
     }
 
-    function showSec(id) {
-        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-        document.getElementById('sec-' + id).style.display = 'block';
-    }
-
-    function addOpeningBal() {
-        if(sessionStorage.getItem('role') !== 'admin') return;
-        const code = document.getElementById('openCode').value;
-        const amt = parseFloat(document.getElementById('openAmt').value || 0);
-        const date = document.getElementById('openDate').value;
-        if(!date || amt < 0) return alert("නිවැරදි තොරතුරු ඇතුළත් කරන්න.");
-        const d = { id: 'open_' + Date.now(), type: 'IN', date, ref: 'OP-BAL', code, amt, desc: 'ආරම්භක ශේෂය (' + code + ')', source: code, cheque: '-', proj: '', realized: true };
-        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        db.push(d); localStorage.setItem('sch_db', JSON.stringify(db));
-        syncToCloud(); refreshDash(); renderRecentTransactions(); alert("ආරම්භක ශේෂය සුරැකුණි.");
-    }
-
-    function addTx(type) {
-        const role = sessionStorage.getItem('role');
-        if(role === 'guest') return;
-        
-        const p = type === 'IN' ? 'in' : 'ex';
-        const amtInput = document.getElementById(p+'Amt');
-        const dateInput = document.getElementById(p+'Date');
-        const codeInput = document.getElementById(p+'Code');
-        
-        const amt = parseFloat(amtInput.value || 0);
-        const date = dateInput.value;
-        const code = codeInput.value;
-
-        if(!date || amt <= 0 || !code) {
-            alert("අසම්පූර්ණ දත්ත: කරුණාකර දිනය, කේතය සහ මුදල නිවැරදිව ඇතුළත් කරන්න.");
-            return;
+    function applyPermissions() {
+        if(userRole === 'ADMIN' || userRole === 'STAFF') {
+            document.querySelectorAll('.staff-only').forEach(el => el.style.display = 'block');
         }
-
-        const d = {
-            id: 'tx_' + Date.now(), type, date, ref: document.getElementById(p+'Ref').value,
-            code, amt, desc: document.getElementById(p+'Desc').value,
-            source: type==='EX'?document.getElementById('exSource').value:code,
-            cheque: type==='EX'?document.getElementById('exCheque').value:'-',
-            proj: type==='EX' ? document.getElementById('exProjLink').value : '',
-            realized: true 
-        };
-        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        db.push(d); localStorage.setItem('sch_db', JSON.stringify(db));
-        syncToCloud(); 
-        amtInput.value = ''; document.getElementById(p+'Ref').value = ''; document.getElementById(p+'Desc').value = '';
-        refreshDash(); renderRecentTransactions(); alert("දත්ත සාර්ථකව සුරැකුණි.");
+        if(userRole === 'ADMIN') {
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+        }
     }
 
-    function renderRecentTransactions() {
-        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        let recent = db.filter(r => !r.id.startsWith('open')).slice(-5).reverse();
-        const role = sessionStorage.getItem('role');
-        
-        let html = '<table><tr><th>දිනය</th><th>කේතය</th><th>මුදල</th><th>විස්තරය</th><th>ක්‍රියාව</th></tr>';
-        recent.forEach(r => {
-            let actionBtns = '';
-            if(role === 'admin') {
-                actionBtns = `<button class="btn-edit" onclick="editTx('${r.id}')">සංශෝධනය</button><button class="btn-del" onclick="deleteTx('${r.id}')">මකන්න</button>`;
-            } else {
-                actionBtns = `<span style="font-size:10px; color:gray">අවසර නැත (Admin Only)</span>`;
+    function init() {
+        populateOptions();
+        refreshDashboard();
+        renderCodesList();
+    }
+
+    function toggleOpeningSec() {
+        const el = document.getElementById('op-sec');
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function populateOptions() {
+        const selects = ['inCodeSelect', 'exSourceSelect', 'opCodeSelect'];
+        selects.forEach(sId => {
+            const el = document.getElementById(sId);
+            if(el) {
+                el.innerHTML = '';
+                S_CODES.forEach(c => el.innerHTML += `<option value="${c}">${c} - ${CODE_INFO[c]}</option>`);
             }
-            html += `<tr><td>${r.date}</td><td>${r.code}</td><td class="${r.type==='IN'?'in-amt':'ex-amt'}">${r.amt.toFixed(2)}</td><td>${r.desc}</td><td>${actionBtns}</td></tr>`;
         });
-        document.getElementById('recent-transactions-list').innerHTML = html + '</table>';
-    }
-
-    function editTx(id) {
-        if(sessionStorage.getItem('role') !== 'admin') return alert("සංශෝධනය කිරීමට අවසර ඇත්තේ ප්‍රධාන කළමනාකරුට පමණි.");
-        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        let tx = db.find(r => r.id === id);
-        if(!tx) return;
-        if(confirm("මෙම දත්තය සංශෝධනය කිරීමට අවශ්‍යද?")) {
-            const p = tx.type === 'IN' ? 'in' : 'ex';
-            document.getElementById(p+'Date').value = tx.date;
-            document.getElementById(p+'Ref').value = tx.ref;
-            document.getElementById(p+'Code').value = tx.code;
-            document.getElementById(p+'Amt').value = tx.amt;
-            document.getElementById(p+'Desc').value = tx.desc;
-            deleteTx(id, false); window.scrollTo(0,0);
+        const exCodeEl = document.getElementById('exCodeSelect');
+        if(exCodeEl) {
+            exCodeEl.innerHTML = '';
+            EX_CODES.forEach(c => exCodeEl.innerHTML += `<option value="${c}">${c} - ${CODE_INFO[c]}</option>`);
         }
+        updateProjectSelects();
     }
 
-    function deleteTx(id, ask = true) {
-        if(sessionStorage.getItem('role') !== 'admin') return alert("දත්ත මකා දැමීමට අවසර ඇත්තේ ප්‍රධාන කළමනාකරුට පමණි.");
-        if(ask && !confirm("මකා දැමීමට ඔබ ස්ථිරද?")) return;
+    function renderCodesList() {
+        document.getElementById('codes-s').innerHTML = S_CODES.map(c => 
+            `<div class="code-tag"><span class="code-num">${c}</span>${CODE_INFO[c]}</div>`
+        ).join('');
+        
+        document.getElementById('codes-ex').innerHTML = EX_CODES.map(c => 
+            `<div class="code-tag"><span class="code-num" style="background:var(--danger); color:white;">${c}</span>${CODE_INFO[c]}</div>`
+        ).join('');
+    }
+
+    async function saveData(type) {
+        const prefix = type === 'IN' ? 'in' : 'ex';
+        const id = document.getElementById('edit-id-' + prefix).value;
+        const data = {
+            id: id ? parseInt(id) : Date.now(),
+            date: document.getElementById(prefix + 'Date').value,
+            ref: document.getElementById(prefix + 'Ref').value,
+            vouch: type === 'EX' ? document.getElementById('exVoucher').value : '',
+            code: document.getElementById(prefix + 'CodeSelect').value,
+            amt: parseFloat(document.getElementById(prefix + 'Amt').value || 0),
+            desc: document.getElementById(prefix + 'Desc').value,
+            type: type,
+            source: type === 'EX' ? document.getElementById('exSourceSelect').value : document.getElementById('inCodeSelect').value,
+            proj: document.getElementById(prefix + 'ProjSelect').value,
+            status: type === 'IN' ? true : false,
+            isOp: false
+        };
+        if(!data.date || data.amt <= 0) return alert("කරුණාකර දිනය සහ මුදල ඇතුළත් කරන්න.");
+
+        toggleLoading(true);
+        try {
+            if(GOOGLE_SCRIPT_URL.includes("http")) {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(data)
+                });
+            }
+
+            let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+            if(id) db = db.filter(x => x.id !== parseInt(id));
+            db.push(data);
+            localStorage.setItem('sch_db', JSON.stringify(db));
+
+            alert("දත්ත සාර්ථකව සුරැකිණි!");
+            resetForms();
+            loadRecentTable();
+            refreshDashboard();
+        } catch (e) { alert("දෝෂයක් සිදුවිය!"); }
+        toggleLoading(false);
+    }
+
+    async function saveOpening() {
+        const code = document.getElementById('opCodeSelect').value;
+        const amt = parseFloat(document.getElementById('opAmt').value || 0);
+        if(amt <= 0) return alert("මුදල ඇතුළත් කරන්න");
+        const data = { id: Date.now(), date: "2024-01-01", ref: 'OPENING', vouch: '', code: code, amt: amt, desc: 'ආරම්භක ශේෂය', type: 'IN', source: code, isOp: true, status: true };
+        
+        toggleLoading(true);
+        if(GOOGLE_SCRIPT_URL.includes("http")) {
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        }
         let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        db = db.filter(r => r.id !== id);
+        db.push(data);
         localStorage.setItem('sch_db', JSON.stringify(db));
-        syncToCloud(); refreshDash(); renderRecentTransactions();
+        toggleLoading(false);
+        
+        alert("ආරම්භක ශේෂය එක් කරන ලදී!");
+        refreshDashboard();
+        toggleOpeningSec();
     }
 
-    function prepareReport(type) {
-        currentReportType = type;
+    function openReport(type) {
+        currentReport = type;
         showSec('report');
-        if (type === 'recon' || type === 'proj_rep') {
-            document.getElementById('filter-area').style.display = 'none';
+        document.getElementById('filter-box').style.display = (type === 'IN' || type === 'EX') ? 'block' : 'none';
+        if(type === 'IN' || type === 'EX') {
+            const list = type === 'IN' ? S_CODES : EX_CODES;
+            document.getElementById('repFilter').innerHTML = '<option value="ALL">සියලුම කේතයන්</option>' + list.map(c => `<option value="${c}">${c} - ${CODE_INFO[c]}</option>`).join('');
+        }
+        generateReport();
+    }
+
+    function generateReport() {
+        const db = JSON.parse(localStorage.getItem('sch_db') || '[]').sort((a,b) => new Date(a.date) - new Date(b.date));
+        const from = document.getElementById('repFrom').value;
+        const to = document.getElementById('repTo').value;
+        const filter = document.getElementById('repFilter').value;
+        let html = '';
+
+        if(currentReport === 'CASHBOOK') {
+            document.getElementById('report-header-title').innerText = "මුදල් පොත (Cash Book)";
+            
+            // Calculate actual Opening Balance (all records marked isOp:true)
+            let bf = db.filter(r => r.isOp === true).reduce((a,b) => a + b.amt, 0);
+            
+            // Also include transactions BEFORE the "from" date into B/F balance
+            if(from) {
+                bf += db.filter(r => !r.isOp && new Date(r.date) < new Date(from)).reduce((a,b) => a + (b.type==='IN'?b.amt:-b.amt), 0);
+            }
+
+            html = '<table><tr><th>දිනය</th><th>විස්තරය (කේතය)</th><th>ලදුපත්/වවුචර/චෙක්</th><th>හර DR (රු.)</th><th>බැර CR (රු.)</th><th>ශේෂය (රු.)</th></tr>';
+            html += `<tr style="background:#f1f2f6; font-weight:bold;"><td colspan="5">වර්ෂය ආරම්භයේ ඉදිරියට ගෙන ආ ශේෂය (B/F Balance)</td><td style="text-align:right;">${bf.toLocaleString(undefined,{minimumFractionDigits:2})}</td></tr>`;
+            
+            let bal = bf;
+            // Filter out records where isOp is true so they don't appear as rows
+            db.filter(r => !r.isOp && (!from || r.date >= from) && (!to || r.date <= to)).forEach(r => {
+                bal += (r.type === 'IN' ? r.amt : -r.amt);
+                let refDisp = r.type === 'IN' ? r.ref : `${r.vouch || '-'} / ${r.ref || '-'}`;
+                html += `<tr><td>${r.date}</td><td>${r.desc} <small>(${r.source})</small></td><td>${refDisp}</td><td>${r.type==='IN'?r.amt.toFixed(2):'-'}</td><td>${r.type==='EX'?r.amt.toFixed(2):'-'}</td><td style="text-align:right; font-weight:bold;">${bal.toFixed(2)}</td></tr>`;
+            });
+        } else if(currentReport === 'BANK') {
+            document.getElementById('report-header-title').innerText = "බැංකු සැසඳුම් වාර්තාව";
+            const cashBal = db.reduce((a,b) => a + (b.type==='IN'?b.amt:-b.amt), 0);
+            const pending = db.filter(r => r.type === 'EX' && !r.status);
+            const pTotal = pending.reduce((a,b) => a + b.amt, 0);
+            html = `<div style="padding:20px; border:1px solid #ddd; border-radius:10px; margin-bottom:20px;">
+                    <h3>මුදල් පොත් ශේෂය: රු. ${cashBal.toLocaleString()}</h3>
+                    <h3 style="color:var(--danger)">(+) ඉදිරිපත් නොකළ චෙක්පත්: රු. ${pTotal.toLocaleString()}</h3>
+                    <hr><h2>බැංකු ශේෂය: රු. ${(cashBal+pTotal).toLocaleString()}</h2></div>`;
+            html += '<table><tr><th>දිනය</th><th>වවුචර අංකය</th><th>චෙක්පත් අංකය</th><th>විස්තරය</th><th>මුදල</th><th>ක්‍රියාව</th></tr>';
+            pending.forEach(p => {
+                const clearBtn = userRole === 'ADMIN' ? `<button class="btn" style="padding:5px 10px; background:var(--success); color:white; font-size:11px;" onclick="toggleStatus(${p.id})">Clear Now</button>` : '-';
+                html += `<tr><td>${p.date}</td><td>${p.vouch || '-'}</td><td>${p.ref || '-'}</td><td>${p.desc}</td><td>${p.amt.toFixed(2)}</td><td>${clearBtn}</td></tr>`;
+            });
         } else {
-            document.getElementById('filter-area').style.display = 'block';
+            document.getElementById('report-header-title').innerText = currentReport === 'IN' ? "ආදායම් විශ්ලේෂණ වාර්තාව" : "වියදම් විශ්ලේෂණ වාර්තාව";
+            const codes = filter === 'ALL' ? (currentReport === 'IN' ? S_CODES : EX_CODES) : [filter];
+            html = '<table><tr><th>කේතය</th><th>විස්තරය</th><th style="text-align:right;">මුළු මුදල (රු.)</th></tr>';
+            let total = 0;
+            codes.forEach(c => {
+                // Include Opening Balances in Income analysis if it's an "IN" report
+                const amt = db.filter(r => r.type === currentReport && r.code === c && (!from || r.date >= from) && (!to || r.date <= to)).reduce((a,b) => a + b.amt, 0);
+                html += `<tr><td><b style="color:var(--primary)">${c}</b></td><td>${CODE_INFO[c]}</td><td style="text-align:right;">${amt.toLocaleString(undefined,{minimumFractionDigits:2})}</td></tr>`;
+                total += amt;
+            });
+            html += `<tr style="background:#f1f2f6; font-weight:bold;"><td colspan="2">මුළු එකතුව</td><td style="text-align:right;">${total.toLocaleString(undefined,{minimumFractionDigits:2})}</td></tr>`;
         }
-        document.getElementById('code-filter-field').style.display = (type === 'code_wise') ? 'block' : 'none';
-        document.getElementById('recon-inputs').style.display = (type === 'recon') ? 'block' : 'none';
-        runFilteredReport();
+        document.getElementById('report-content').innerHTML = html + '</table>';
     }
 
-    function runFilteredReport() {
-        const fromDate = document.getElementById('fDate').value;
-        const toDate = document.getElementById('tDate').value;
-        const filterCode = document.getElementById('filterCodeSelect').value;
-        runReport(currentReportType, fromDate, toDate, filterCode);
-    }
-
-    function runReport(type, from = '', to = '', codeFilter = '') {
-        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        const role = sessionStorage.getItem('role');
-        if(type !== 'recon' && type !== 'proj_rep') {
-            if(from) db = db.filter(r => r.date >= from);
-            if(to) db = db.filter(r => r.date <= to);
-        }
-        let html = '', title = '';
-        if(type === 'recon') {
-            title = "බැංකු සැසඳුම"; 
-            document.getElementById('rep-body').innerHTML = "බැංකු ප්‍රකාශනයේ ශේෂය ඇතුළත් කර බොත්තම ඔබන්න.";
-        } else if(type === 'cash') {
-            title = "මුදල් පොත";
-            html = `<table><tr><th>දිනය</th><th>විස්තරය</th><th>කේතය</th><th>ලැබීම් (+)</th><th>ගෙවීම් (-)</th><th>ශේෂය</th><th class="chq-col">නිෂ්කාශණය වීම</th></tr>`;
-            let bal = 0;
-            let combined = [...db.map(r=>({...r, isP:false})), ...projs.map(p=>({id:p.id, type:'IN', date:p.date, desc:'ව්‍යාපෘති ලැබීම: '+p.name, code:p.incomeCode || 'PROJ', amt:p.initialAmt, realized:true}))];
-            combined.sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(r => {
-                bal += (r.type==='IN'?r.amt:-r.amt);
-                let check = (r.type==='EX' && r.cheque !== '-') ? `<input type="checkbox" ${r.realized?'checked':''} ${role==='guest'?'disabled':''} onchange="toggleRealized('${r.id}', this.checked)"><br>${r.realized?'ඔව්':'නැත'}` : '-';
-                html += `<tr><td>${r.date}</td><td>${r.desc}</td><td>${r.code}</td><td class="in-amt">${r.type==='IN'?r.amt.toFixed(2):'-'}</td><td class="ex-amt">${r.type==='EX'?r.amt.toFixed(2):'-'}</td><td><b>${bal.toFixed(2)}</b></td><td class="chq-col">${check}</td></tr>`;
-            });
-        } else if(type === 'fund') {
-            title = "ලැබීම් සාරාංශය";
-            html = `<table><tr><th>කේතය</th><th>ලැබීම්</th><th>ගෙවීම්</th><th>ශේෂය</th></tr>`;
-            S.forEach(s => {
-                let tin = db.filter(r=>r.code===s && r.type==='IN').reduce((a,b)=>a+b.amt,0);
-                let projIn = projs.filter(p => p.incomeCode === s).reduce((a,b)=>a+b.initialAmt,0);
-                let tout = db.filter(r=>r.source===s && r.type==='EX').reduce((a,b)=>a+b.amt,0);
-                html += `<tr><td>${s}</td><td>${(tin + projIn).toFixed(2)}</td><td>${tout.toFixed(2)}</td><td><b>${(tin + projIn - tout).toFixed(2)}</b></td></tr>`;
-            });
-        } else if(type === 'exp_sum') {
-            title = "වියදම් සාරාංශය";
-            html = `<table><tr><th>කේතය</th><th>මුදල</th></tr>`;
-            EX.forEach(c => {
-                let a = db.filter(r=>r.type==='EX' && r.code===c).reduce((a,b)=>a+b.amt,0);
-                html += `<tr><td>${c}</td><td class="ex-amt">${a.toFixed(2)}</td></tr>`;
-            });
-        } else if(type === 'proj_rep') {
-            title = "ව්‍යාපෘති වාර්තාව";
-            projs.forEach(p => {
-                let pExpenses = db.filter(r => r.proj === p.name);
-                let totalExp = pExpenses.reduce((a,b) => a+b.amt, 0);
-                html += `<div style="background:#f9f9f9; padding:15px; border:1px solid #ddd; margin-bottom:20px; border-radius:8px;">`;
-                html += `<h4 style="margin:0; color:var(--project)">ව්‍යාපෘතිය: ${p.name} (කේතය: ${p.incomeCode || 'PROJ'})</h4>`;
-                html += `<p style="font-size:13px;">මුළු ලැබීම: <b>${p.initialAmt.toFixed(2)}</b> | මුළු වියදම: <b class="ex-amt">${totalExp.toFixed(2)}</b> | ශේෂය: <b>${(p.initialAmt - totalExp).toFixed(2)}</b></p>`;
-                
-                if(pExpenses.length > 0) {
-                    html += `<table style="font-size:11px; margin-top:5px;"><tr><th>දිනය</th><th>විස්තරය</th><th>කේතය</th><th>මුදල</th></tr>`;
-                    pExpenses.forEach(ex => {
-                        html += `<tr><td>${ex.date}</td><td>${ex.desc}</td><td>${ex.code}</td><td class="ex-amt">${ex.amt.toFixed(2)}</td></tr>`;
-                    });
-                    html += `</table>`;
-                } else {
-                    html += `<p style="font-size:11px; color:gray italic">වියදම් මෙතෙක් ඇතුළත් කර නොමැත.</p>`;
-                }
-                html += `</div>`;
-            });
-        } else if(type === 'code_wise') {
-            title = "කේතය අනුව වාර්තාව: " + codeFilter;
-            html = `<table><tr><th>දිනය</th><th>විස්තරය</th><th>මුදල</th></tr>`;
-            db.filter(r => r.code === codeFilter || r.source === codeFilter).forEach(r => {
-                html += `<tr><td>${r.date}</td><td>${r.desc}</td><td class="${r.type==='IN'?'in-amt':'ex-amt'}">${r.amt.toFixed(2)}</td></tr>`;
-            });
-        }
-        document.getElementById('rep-title').innerText = title;
-        if(type !== 'recon') document.getElementById('rep-body').innerHTML = html + (type !== 'proj_rep' ? "</table>" : "");
-    }
-
-    function calculateRecon() {
-        const bankStmt = parseFloat(document.getElementById('bankStatementAmt').value || 0);
+    function refreshDashboard() {
         const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        const cashBookBal = (db.filter(r=>r.type==='IN').reduce((a,b)=>a+b.amt,0) + projs.reduce((a,b)=>a+b.initialAmt,0)) - db.filter(r=>r.type==='EX').reduce((a,b)=>a+b.amt,0);
-        const unpresented = db.filter(r => r.type === 'EX' && r.cheque !== '-' && !r.realized);
-        const totalUnpresented = unpresented.reduce((a,b) => a+b.amt, 0);
-        let html = `<table style="max-width:600px; margin:auto; border:2px solid var(--primary);"><tr><th colspan="2" style="text-align:center;">බැංකු සැසඳුම් ප්‍රකාශය</th></tr><tr><td>මුදල් පොතේ ශේෂය</td><td style="text-align:right;"><b>${cashBookBal.toFixed(2)}</b></td></tr><tr><td>(+) බැංකුවට ඉදිරිපත් නොකළ චෙක්පත්</td><td style="text-align:right; color:var(--success)">${totalUnpresented.toFixed(2)}</td></tr><tr><td><b>සැසඳුනු බැංකු ශේෂය</b></td><td style="text-align:right; border-top:1px solid #000; border-bottom:4px double #000;"><b>${(cashBookBal + totalUnpresented).toFixed(2)}</b></td></tr><tr style="background:#f0f0f0;"><td>බැංකු ප්‍රකාශනයේ ශේෂය</td><td style="text-align:right;"><b>${bankStmt.toFixed(2)}</b></td></tr></table>`;
-        document.getElementById('rep-body').innerHTML = html;
-    }
+        const tin = db.filter(r => r.type === 'IN').reduce((a,b) => a + b.amt, 0);
+        const tex = db.filter(r => r.type === 'EX').reduce((a,b) => a + b.amt, 0);
+        
+        animateValue("dash-in", 0, tin, 1000);
+        animateValue("dash-ex", 0, tex, 1000);
+        animateValue("dash-bal", 0, (tin-tex), 1000);
 
-    function toggleRealized(id, status) {
-        if(sessionStorage.getItem('role') === 'guest') return;
-        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        let idx = db.findIndex(r => r.id === id);
-        if(idx !== -1) { db[idx].realized = status; localStorage.setItem('sch_db', JSON.stringify(db)); syncToCloud(); }
-    }
-
-    function refreshDash() {
-        const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        let tIn = db.filter(r=>r.type==='IN').reduce((a,b)=>a+b.amt,0) + projs.reduce((a,b)=>a+b.initialAmt,0);
-        let tEx = db.filter(r=>r.type==='EX').reduce((a,b)=>a+b.amt,0);
-        document.getElementById('dash-stats').innerHTML = `<div class="card"><h4>මුළු ලැබීම්</h4><p class="in-amt">රු. ${tIn.toFixed(2)}</p></div><div class="card"><h4>මුළු ගෙවීම්</h4><p class="ex-amt">රු. ${tEx.toFixed(2)}</p></div><div class="card"><h4>ශේෂය</h4><p>රු. ${(tIn-tEx).toFixed(2)}</p></div>`;
         let fundHtml = '';
-        S.forEach(s => {
-            let tin = db.filter(r=>r.code===s && r.type==='IN').reduce((a,b)=>a+b.amt,0);
-            let projIn = projs.filter(p => p.incomeCode === s).reduce((a,b)=>a+b.initialAmt,0);
-            let tout = db.filter(r=>r.source===s && r.type==='EX').reduce((a,b)=>a+b.amt,0);
-            let bal = (tin + projIn) - tout;
-            fundHtml += `<div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #ddd; border-left:4px solid var(--accent)"><small>${s}</small><br><b>${bal.toFixed(2)}</b></div>`;
+        S_CODES.forEach((s, i) => {
+            const fundTransactions = db.filter(r => r.type === 'IN' && r.source === s);
+            const bal = db.filter(r => r.source === s).reduce((a,b) => a + (b.type==='IN'?b.amt:-b.amt), 0);
+            
+            let incomeListText = fundTransactions.length > 0 
+                ? "ලැබීම් ලැයිස්තුව:\n" + fundTransactions.map(t => `${t.isOp ? 'ආරම්භක' : t.date}: රු. ${t.amt.toFixed(2)} (${t.desc})`).join('\n')
+                : "ලැබීම් කිසිවක් නොමැත";
+
+            fundHtml += `<div class="fund-box" style="background:${COLORS[i%COLORS.length]}; color: ${i%2==0 ? 'white' : '#1b5e20'}" title="${incomeListText}">
+                <div>${s}</div>
+                <div style="font-size:18px;">රු. ${bal.toLocaleString()}</div>
+                <small>${CODE_INFO[s]}</small>
+            </div>`;
         });
-        document.getElementById('dash-fund-grid').innerHTML = fundHtml;
+        document.getElementById('dash-funds').innerHTML = fundHtml;
     }
 
-    function addProject() {
-        if(sessionStorage.getItem('role') === 'guest') return;
-        const name = document.getElementById('pName').value;
-        const amt = parseFloat(document.getElementById('pAmt').value || 0);
-        const date = document.getElementById('pDate').value;
-        const incCode = document.getElementById('pIncomeCode').value;
-        const editId = document.getElementById('editProjectId').value;
-        
-        if(!name || amt <= 0 || !date) {
-            alert("අසම්පූර්ණ දත්ත: කරුණාකර ව්‍යාපෘතියේ නම, දිනය සහ මුදල ඇතුළත් කරන්න.");
-            return;
+    function animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        const range = end - start;
+        const startTime = new Date().getTime();
+        const timer = setInterval(() => {
+            const now = new Date().getTime();
+            const progress = Math.min((now - startTime) / duration, 1);
+            const value = start + (range * progress);
+            obj.innerHTML = value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            if (progress === 1) clearInterval(timer);
+        }, 20);
+    }
+
+    function toggleStatus(id) {
+        let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+        let itm = db.find(x => x.id === id);
+        if(itm) itm.status = !itm.status;
+        localStorage.setItem('sch_db', JSON.stringify(db));
+        generateReport();
+    }
+
+    function loadRecentTable() {
+        const db = JSON.parse(localStorage.getItem('sch_db') || '[]').sort((a,b) => b.id - a.id);
+        let html = '<table><tr><th>දිනය</th><th>විස්තරය</th><th>මුදල</th><th>වර්ගය</th><th>ක්‍රියාව</th></tr>';
+        db.slice(0,8).forEach(r => {
+            const actionBtns = userRole === 'ADMIN' ? 
+                `<button class="btn" style="padding:5px 10px; background:orange; color:white; font-size:11px;" onclick="editData(${r.id})">Edit</button>
+                 <button class="btn" style="padding:5px 10px; background:red; color:white; font-size:11px;" onclick="deleteData(${r.id})">Del</button>` : '-';
+            
+            html += `<tr><td>${r.isOp ? 'ආරම්භක' : r.date}</td><td>${r.desc}</td>
+            <td style="font-weight:bold; color:${r.type==='IN'?'green':'red'}">${r.amt.toFixed(2)}</td>
+            <td><small>${r.type==='IN'?'ලැබීම':'ගෙවීම'}</small></td>
+            <td>${actionBtns}</td></tr>`;
+        });
+        document.getElementById('recent-transactions-table').innerHTML = html + '</table>';
+    }
+
+    function editData(id) {
+        const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+        const r = db.find(x => x.id === id); if(!r) return;
+        const p = r.type === 'IN' ? 'in' : 'ex';
+        showSec('entry');
+        document.getElementById('edit-id-'+p).value = r.id;
+        document.getElementById(p+'Date').value = r.date;
+        document.getElementById(p+'Ref').value = r.ref;
+        if(r.type==='EX') document.getElementById('exVoucher').value = r.vouch || '';
+        document.getElementById(p+'CodeSelect').value = r.code;
+        document.getElementById(p+'Amt').value = r.amt;
+        document.getElementById(p+'Desc').value = r.desc;
+        document.getElementById(p+'ProjSelect').value = r.proj;
+        if(r.type==='EX') document.getElementById('exSourceSelect').value = r.source;
+        document.getElementById('btn-save-'+p).innerText = "දත්ත යාවත්කාලීන කරන්න";
+    }
+
+    function deleteData(id) {
+        if(confirm("මෙම දත්තය මකා දැමීමට අවශ්‍ය බව සහතිකද?")) {
+            let db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+            db = db.filter(x => x.id !== id);
+            localStorage.setItem('sch_db', JSON.stringify(db));
+            loadRecentTable(); refreshDashboard();
         }
-        
-        let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        
-        if(editId) {
-            if(sessionStorage.getItem('role') !== 'admin') return alert("සංශෝධනය කිරීමට අවසර ඇත්තේ ප්‍රධාන කළමනාකරුට පමණි.");
-            let idx = projs.findIndex(p => p.id === editId);
-            if(idx !== -1) projs[idx] = { ...projs[idx], name, initialAmt: amt, date, incomeCode: incCode };
-            document.getElementById('editProjectId').value = '';
-            document.getElementById('btnProjectAction').innerText = 'සුරකින්න';
-        } else {
-            projs.push({ id: 'pj_'+Date.now(), name, initialAmt: amt, date, incomeCode: incCode });
-        }
-        
-        localStorage.setItem('sch_projs', JSON.stringify(projs));
-        syncToCloud(); setupDrops();
-        document.getElementById('pName').value = '';
-        document.getElementById('pAmt').value = '';
-        document.getElementById('pDate').value = '';
-        alert("ව්‍යාපෘති දත්ත යාවත්කාලීන විය.");
     }
 
-    function deleteProject(id) {
-        if(sessionStorage.getItem('role') !== 'admin') return alert("මකා දැමීමට අවසර ඇත්තේ ප්‍රධාන කළමනාකරුට පමණි.");
-        if(!confirm("මෙම ව්‍යාපෘතිය මකා දැමීමට ඔබ ස්ථිරද? මින් එම ව්‍යාපෘතියට අදාළ වියදම් ඉවත් නොවන බව සලකන්න.")) return;
+    function saveProject() {
+        const name = document.getElementById('projName').value;
+        const est = parseFloat(document.getElementById('projEst').value || 0);
+        if(!name) return alert("ව්‍යාපෘති නාමය ඇතුළත් කරන්න.");
         let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        projs = projs.filter(p => p.id !== id);
+        projs.push({ id: Date.now(), name, est });
         localStorage.setItem('sch_projs', JSON.stringify(projs));
-        syncToCloud(); setupDrops();
-    }
-
-    function editProject(id) {
-        if(sessionStorage.getItem('role') !== 'admin') return alert("සංශෝධනය කිරීමට අවසර ඇත්තේ ප්‍රධාන කළමනාකරුට පමණි.");
-        let projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
-        let p = projs.find(x => x.id === id);
-        if(!p) return;
-        document.getElementById('pName').value = p.name;
-        document.getElementById('pAmt').value = p.initialAmt;
-        document.getElementById('pDate').value = p.date;
-        document.getElementById('pIncomeCode').value = p.incomeCode || 'S1';
-        document.getElementById('editProjectId').value = p.id;
-        document.getElementById('btnProjectAction').innerText = 'යාවත්කාලීන කරන්න';
-        window.scrollTo(0,0);
+        document.getElementById('projName').value = ''; document.getElementById('projEst').value = '';
+        updateProjectSelects(); renderProjectList();
+        alert("ව්‍යාපෘතිය සාර්ථකව ඇතුළත් කරන ලදී.");
     }
 
     function renderProjectList() {
         const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
         const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
-        const role = sessionStorage.getItem('role');
-        let html = '<table><tr><th>ව්‍යාපෘතිය</th><th>කේතය</th><th>ලැබුණු මුදල</th><th>වියදම්</th><th>ශේෂය</th><th>ක්‍රියාව</th></tr>';
+        let html = '<table><tr><th>ව්‍යාපෘති නාමය</th><th>ඇස්තමේන්තුව (රු.)</th><th>මේ දක්වා වියදම (රු.)</th><th>ශේෂය</th><th>ක්‍රියාව</th></tr>';
         projs.forEach(p => {
-            let e = db.filter(r=>r.proj===p.name).reduce((a,b)=>a+b.amt,0);
-            let actionBtns = '';
-            if(role === 'admin') {
-                actionBtns = `<button class="btn-edit" onclick="editProject('${p.id}')">සංශෝධනය</button><button class="btn-del" onclick="deleteProject('${p.id}')">මකන්න</button>`;
-            } else {
-                actionBtns = `<span style="font-size:10px; color:gray">අවසර නැත</span>`;
-            }
-            html += `<tr><td>${p.name}</td><td>${p.incomeCode || '-'}</td><td>${p.initialAmt.toFixed(2)}</td><td class="ex-amt">${e.toFixed(2)}</td><td><b>${(p.initialAmt-e).toFixed(2)}</b></td><td>${actionBtns}</td></tr>`;
+            const spent = db.filter(r => r.proj === p.name && r.type === 'EX').reduce((a,b) => a + b.amt, 0);
+            const bal = p.est - spent;
+            html += `<tr><td><b>${p.name}</b></td><td>${p.est.toLocaleString()}</td><td style="color:red">${spent.toLocaleString()}</td><td style="font-weight:bold; color:${bal<0?'red':'green'}">${bal.toLocaleString()}</td>
+            <td><button class="btn" style="padding:5px 10px; background:var(--primary); color:var(--gold); font-size:11px;" onclick="viewProjectDetails('${p.name}')">View Details</button></td></tr>`;
         });
-        document.getElementById('projectListTable').innerHTML = html + '</table>';
+        document.getElementById('project-list-table').innerHTML = html + '</table>';
+    }
+
+    function viewProjectDetails(projName) {
+        const db = JSON.parse(localStorage.getItem('sch_db') || '[]');
+        const projData = db.filter(r => r.proj === projName);
+        document.getElementById('detail-proj-name').innerText = "ව්‍යාපෘති විස්තරය: " + projName;
+        let html = '<table><tr><th>දිනය</th><th>විස්තරය</th><th>මුදල (රු.)</th><th>වර්ගය</th></tr>';
+        projData.forEach(r => { html += `<tr><td>${r.date}</td><td>${r.desc}</td><td>${r.amt.toFixed(2)}</td><td>${r.type === 'IN' ? 'ලැබීම' : 'වියදම'}</td></tr>`; });
+        if(projData.length === 0) html = '<p style="text-align:center; padding:20px;">මෙම ව්‍යාපෘතිය සඳහා මෙතෙක් ගනුදෙනු සිදුකර නොමැත.</p>';
+        else html += '</table>';
+        document.getElementById('project-expenses-list').innerHTML = html;
+        document.getElementById('proj-detail-view').style.display = 'block';
+        document.getElementById('proj-detail-view').scrollIntoView({behavior: "smooth"});
+    }
+
+    function updateProjectSelects() {
+        const projs = JSON.parse(localStorage.getItem('sch_projs') || '[]');
+        ['inProjSelect', 'exProjSelect'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.innerHTML = '<option value=\"\">ව්‍යාපෘතියක් නොමැත</option>';
+                projs.forEach(p => el.innerHTML += `<option value=\"${p.name}\">${p.name}</option>`);
+            }
+        });
+    }
+
+    function showSec(id) {
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById('sec-' + id).style.display = 'block';
+        document.getElementById('nav-' + id)?.classList.add('active');
+        if(id === 'entry') loadRecentTable();
+        if(id === 'proj') renderProjectList();
+        if(id === 'dash') refreshDashboard();
+        window.scrollTo(0,0);
+    }
+
+    function resetForms() {
+        document.querySelectorAll('input, textarea').forEach(i => i.value = '');
+        document.getElementById('btn-save-in').innerText = "ලැබීම සුරකින්න";
+        document.getElementById('btn-save-ex').innerText = "ගෙවීම සුරකින්න";
+        document.getElementById('edit-id-in').value = ''; document.getElementById('edit-id-ex').value = '';
     }
 </script>
 </body>
 </html>
-
-
-
